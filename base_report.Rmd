@@ -1,0 +1,597 @@
+---
+title: ''
+author: ''
+date: ''
+output: 
+  html_document:
+    df_print: paged
+    keep_md: TRUE
+    toc: TRUE
+    toc_float: TRUE
+    theme: "flatly"
+    code_download: TRUE
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include = FALSE}
+
+  knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, 
+                        fig.width  = 6 * 1.67, fig.height = 6)
+
+```
+
+```{r}
+
+  library(descr)
+  library(tidyverse)
+  library(viridis)
+  library(testthat)
+  library(knitr)
+  library(plotly)
+  library(gtsummary)
+  library(patchwork)
+  
+```
+
+```{r}
+
+# Set colors/theme for plots
+
+  col1 <- viridis(1, option = "A", end = 0.9, dir = -1)
+  col2 <- viridis(1, option = "A")
+# col3 <- viridis(1, option = "A", begin = 0.4)
+  col3 <- "#21091F"
+  col4 <- viridis(1, option = "A", begin = 0.6)
+  col5 <- viridis(1, option = "A", begin = 0.1)
+
+  my_theme <- theme_minimal() +
+    theme(
+      panel.background = element_rect(fill = col2), 
+      axis.text = element_text(color = col1),
+      axis.title = element_text(color = col1),
+      plot.background = element_rect(fill = col2), 
+      legend.background = element_rect(fill = col2), 
+      legend.text = element_text(color = col4), 
+      legend.title = element_text(color = col4), 
+      axis.ticks = element_line(color = col1), 
+      title = element_text(color = col1), 
+      panel.grid = element_line(color = col3), 
+      strip.text = element_text(color = col1), 
+      plot.subtitle = element_text(color = col1),
+      plot.caption = element_text(hjust = 0)
+      )
+  
+  theme_set(my_theme)
+  
+```
+
+```{r}
+
+  load("data/data.RData") 
+
+```
+
+# Missing
+
+```{r}
+
+  df <- data |>
+    map_df(function(x) table(is.na(x))["FALSE"])
+  df$variable_name <- names(data)
+  names(df)[1] <- "n_obs"
+  df <- mutate(df, variable_name = reorder(factor(variable_name), n_obs)) 
+  
+  ggplot(df, aes(x = variable_name, y = n_obs, fill = n_obs)) +
+    geom_bar(stat = "identity") +
+    coord_flip() +
+    labs(x = "Variable", y = "N observations") +
+    scale_fill_viridis(guide = "none", option = "A", begin = 0.3) +
+    geom_hline(
+      yintercept = nrow(data), color = col4, linetype = "dotted", size = 1
+      ) +
+    theme(panel.grid = element_blank()) +
+    scale_y_continuous(breaks = c(0, 100, 200, 300, 400, nrow(data)))
+```
+
+
+
+```{r}
+ ggsave("plots/paper/spearman.tiff", device = "tiff", 
+    scale = 0.8, units = "cm", 
+    width = 33.87, height = 19.05, dpi = 300
+    )
+```
+
+
+```{r}
+
+  data |>
+    select(
+      gender, age_at_diagnosis, smoker, ecog, date_of_surgery, nodal_status, 
+      stage_group, squamous, tumour_size_cm, margins
+      ) |>
+  tbl_summary(
+    missing = "ifany", 
+    type = list(c(smoker, squamous)  ~ "categorical"),
+    statistic = list(
+      all_continuous() ~ "{mean} ({sd}); {median} [{p25}, {p75}]; ({min} to {max})", 
+      date_of_surgery ~ "({min} to {max})"
+      )
+    ) |>
+    add_n() 
+
+ all_categorical() ~ "{n}/{N_nonmiss} ({p}%)",
+      all_continuous() ~ "{mean} ({sd}); {median} [{min}, {max}]; n = {N_nonmiss}" 
+
+```
+
+
+```{r}
+# This is the base plot for the "simple" radio or drop down responses. It
+# produces either a histogram/bar plot, or you can flip the coordinates so the
+# responses are on the y axis. You can also choose to automatically order the
+# bars (response categories) by the number of responses for each.
+
+  basic_bar <- function(
+    data, var, x_label, flip_coord = FALSE, wrap_n = 90, wrap_y = 30,
+    reorder_ = TRUE, cap
+    ){
+    
+    n_1 <- select(data, {{ var }}) |> na.omit() |> nrow()
+    
+    note <- paste0( 
+      "n = ", n_1, " responses"
+    )
+    
+    # A standard horizontal histogram/bar plot for continuous vars
+    if(flip_coord == FALSE){
+      g1 <- filter(data, !is.na({{ var }})) |> 
+        ggplot(aes(x = {{ var }})) +
+        geom_bar(fill = col4, color = col4) +
+        ylab("Number of respondents") +
+        xlab(x_label) +
+        labs(subtitle = cap) 
+      }
+    
+    # # A vertical bar plot for categorical variables with longer labels, 
+    # ordered by how many responses
+    if(flip_coord == TRUE){
+      
+      if(reorder_ == TRUE){
+        g1 <-  filter(data, !is.na({{ var }})) |>
+          group_by({{ var }}) |>
+          summarise(n = n()) |>
+          mutate(x = reorder(factor({{ var }}), n)) |>
+          ggplot(aes(x = x, y = n)) +
+            geom_bar(stat = "identity", fill = col4, color = col4) +
+            ylab("Number of respondents") +
+            xlab(x_label) +
+            coord_flip() +
+            labs(subtitle = cap) +
+            scale_x_discrete(labels = function(x) str_wrap(x, wrap_y))
+        }
+      
+      if(reorder_ == FALSE){
+        g1 <-  filter(data, !is.na({{ var }})) |> 
+          ggplot(aes(x = {{ var }})) +
+          geom_bar(fill = col4, color = col4) +
+          ylab("Number of respondents") +
+          xlab(x_label) +
+          labs(subtitle = cap) +
+          coord_flip() +
+          scale_x_discrete(labels = function(x) str_wrap(x, wrap_y))
+        }
+      }
+
+    g1 + labs(caption = note)
+    
+  }
+
+  # basic_bar(age_s, "Age (years)", flip_coord = FALSE)
+```
+
+```{r}
+
+  # To plot likert scales items, we need to first create a dataset where the
+  # variables are named as their labels, and to all have a consistent set of
+  # levels. This function does that by taking wide data, reshaping to long in
+  # order to rename the variables and ensure the levels are the same, and then
+  # reshaping back to wide.
+  likert_data <- function(data, variables, var_labs, resp_levs){
+
+      df <- data |>
+        pivot_longer(
+          cols = variables, names_to = "question", values_to = "response"
+          ) |>
+        mutate(
+          question = factor(question, levels = variables, labels = var_labs), 
+          response = factor(response, levels = resp_levs)
+          ) |>
+        pivot_wider(
+          id_cols = c(participant_id, randomization_group), # ID and group
+          names_from = "question", 
+          values_from = "response"
+          ) 
+      
+    class(df) <- class(df)[3] # likert() can't handle the tibble
+    return(df)
+    }
+  
+
+  # To plot the data, you first need to call likert() using the data you just
+  # created with the function above.
+  likert_plot <- function(
+    data, start, end, n_levs, wrap_leg = FALSE, ...
+    ){
+    
+    if(wrap_leg == TRUE){
+      plot(likert(data[start:end]),
+        col = viridis(n_levs, option = "A", begin = 0.2),
+        panel.strip.color = col2, 
+        wrap = 100
+        ) +
+        guides(fill = guide_legend(
+          title = "", nrow = 2, byrow = TRUE
+          )) +
+        ylab("") +
+        theme(panel.grid = element_blank(), 
+              legend.position = "bottom", 
+              legend.key.size = unit(0.5,"line"))
+      }else{
+      plot(
+        likert(data[start:end]),
+        col = viridis(n_levs, option = "A", begin = 0.2),
+        panel.strip.color = col2, 
+        wrap = 100
+        ) +
+        guides(fill = guide_legend(
+          title = "", nrow = 1, byrow = TRUE
+          )) +
+        ylab("") +
+        theme(panel.grid = element_blank(), 
+              legend.position = "bottom", 
+              legend.key.size = unit(0.5,"line"))
+      }
+  }
+
+  likert_plot_group <- function(
+    data, start, end, group, n_levs, wrap_leg = FALSE, ...
+    ){
+    
+    if(wrap_leg == TRUE){
+      plot(
+        likert(data[start:end], grouping = data[[group]]),
+        col = viridis(n_levs, option = "A", begin = 0.2),
+        panel.strip.color = col2, 
+        wrap = 100
+        ) +
+        guides(fill = guide_legend(
+          title = "", nrow = 2, byrow = TRUE
+          )) +
+        ylab("") +
+        theme(panel.grid = element_blank(), 
+              legend.position = "bottom", 
+              legend.key.size = unit(0.5,"line"))
+      }else{
+      plot(
+        likert(data[start:end], grouping = data[[group]]),
+        col = viridis(n_levs, option = "A", begin = 0.2),
+        panel.strip.color = col2, 
+        wrap = 100
+        ) +
+        guides(fill = guide_legend(
+          title = "", nrow = 1, byrow = TRUE
+          )) +
+        ylab("") +
+        theme(panel.grid = element_blank(), 
+              legend.position = "bottom", 
+              legend.key.size = unit(0.5,"line"))
+      }
+    }
+
+
+
+```
+
+```{r model_functions}
+
+  orm_model <- function(variable, ...) {
+    form <- as.formula(paste0(
+      variable, " ~ arm + centre"
+      ))
+    
+    m1 <- orm(form, data = data, x = TRUE, y = TRUE)
+      
+    data_frame(
+      OR = round(exp(m1$coefficients[["arm=Boot"]]), 2),
+      p_value = anova(m1)[["arm", "P"]]
+      ) |>
+      mutate(p_value = ifelse(
+        p_value < 0.001, "< 0.001", as.character(round(p_value, 3))
+        )) 
+  }
+
+  lm_model <- function(variable, ...) {
+    form <- as.formula(paste0(
+      variable, " ~ arm"
+      ))
+    
+    m1 <- lm(form, data = data_6, x = TRUE, y = TRUE)
+      
+    est <- m1$coefficients[["armTFNA"]]
+    se <- coef(summary(m1))["armTFNA", "Std. Error"]
+    ll <- confint(m1, "armTFNA", level=0.95)[1]
+    ul <- confint(m1, "armTFNA", level=0.95)[2]
+    data_frame(
+      MD = paste0(
+        round(est, 2),
+        " (", round(ll, 2) , " to ", round(ul, 2), ")"
+        ),
+      p_value = summary(m1)$coefficients["armTFNA", 4]
+      ) |>
+      mutate(p_value = ifelse(
+        p_value < 0.001, "< 0.001", as.character(round(p_value, 3))
+        )) 
+    }
+
+
+  lm_model <- function(variable, ...) {
+    form <- as.formula(paste0(
+      variable, " ~ arm + centre"
+      ))
+    
+    m1 <- lm(form, data = data, x = TRUE, y = TRUE)
+      
+    data_frame(
+      MD = round(m1$coefficients[["armBoot"]], 2),
+      p_value = anova(m1)[["arm", "Pr(>F)"]]
+      ) |>
+      mutate(p_value = ifelse(
+        p_value < 0.001, "< 0.001", as.character(round(p_value, 3))
+        )) 
+  }
+  
+  lrm_model <- function(variable, ...) {
+    form <- as.formula(paste0(
+      variable, " ~ arm + centre"
+      ))
+    
+    m1 <- lrm(form, data = data, x = TRUE, y = TRUE)
+      
+    data_frame(
+      OR = round(exp(m1$coefficients[["arm=Boot"]]), 2),
+      p_value = anova(m1)[["arm", "P"]]
+      ) |>
+      mutate(
+        p_value = ifelse(
+          p_value < 0.001, "< 0.001", as.character(round(p_value, 3))
+          ), 
+        OR = ifelse(
+          OR > 100, "NA", as.character(OR)
+          )
+        ) 
+  }
+  
+
+  
+  
+    orm_model <- function(variable, ...) {
+    form <- as.formula(paste0(
+      variable, " ~ time + hosp"
+      ))
+    
+    m1 <- orm(form, data = data, x = TRUE, y = TRUE)
+    
+    est <- m1$coefficients[["time=Post"]]
+    se <- summary(m1)["time - Pre:Post", "S.E."]
+    ll <- est - (1.96 * se)
+    ul <- est + (1.96 * se)
+    
+    data_frame(
+      OR = paste0(
+        round(exp(est), 2),
+        " (", round(exp(ll), 2) , " to ", round(exp(ul), 2), ")"
+        ),
+      p_value = anova(m1)["time", "P"]
+      ) |>
+      mutate(p_value = ifelse(
+        p_value < 0.001, "< 0.001", as.character(round(p_value, 3))
+        )) 
+    
+  }
+
+
+   pois_model <- function(variable, ...){
+    
+    form <- as.formula(paste0(
+      variable, " ~ condition + (1 | id)"
+      ))
+    
+    m1 <- glmer(form, data = dat, family = poisson(link = "log"))
+    
+    est <- exp(coef(summary(m1))["conditionSigned", "Estimate"])
+    # se <- coef(summary(m1))["conditionSigned", "Std. Error"]
+    ll <- exp(confint(m1, "conditionSigned", level=0.95)[1])
+    ul <- exp(confint(m1, "conditionSigned", level=0.95)[2])
+    
+    data_frame(
+      Effect = 
+        paste0(round(est, 2), " (", round(ll, 2) , " to ", round(ul, 2), ")"),
+      p_value = summary(m1)$coefficients["conditionSigned", 4]
+      ) |>
+      mutate(p_value = ifelse(
+        p_value < 0.001, "< 0.001", as.character(round(p_value, 3))
+        ))
+
+  } # pois_model("utt")
+
+  mean_model <- function(variable, ...){
+    
+    form <- as.formula(paste0(
+      variable, " ~ condition + (1 | id)"
+      ))
+    
+    m1 <- lmer(form, data = dat)
+    
+    est <- coef(summary(m1))["conditionSigned", "Estimate"]
+    ll <- confint(m1, "conditionSigned", level=0.95)[1]
+    ul <- confint(m1, "conditionSigned", level=0.95)[2]
+    
+    data_frame(
+      Effect = 
+        paste0(round(est, 2), " (", round(ll, 2) , " to ", round(ul, 2), ")"),
+      p_value = summary(m1)$coefficients["conditionSigned", 5]
+      ) |>
+      mutate(p_value = ifelse(
+        p_value < 0.001, "< 0.001", as.character(round(p_value, 3))
+        ))
+
+  } # mean_model("attention")
+  
+  log_model <- function(variable, ...){
+    
+    form <- as.formula(paste0(
+      "log(", variable, ") ~ condition + (1 | id)"
+      ))
+    
+    m1 <- lmer(form, data = dat)
+    
+    est <- coef(summary(m1))["conditionSigned", "Estimate"]
+    ll <- confint(m1, "conditionSigned", level=0.95)[1]
+    ul <- confint(m1, "conditionSigned", level=0.95)[2]
+    
+    data_frame(
+      Effect = 
+        paste0(round(est, 2), " (", round(ll, 2) , " to ", round(ul, 2), ")"),
+      p_value = summary(m1)$coefficients["conditionSigned", 5]
+      ) |>
+      mutate(p_value = ifelse(
+        p_value < 0.001, "< 0.001", as.character(round(p_value, 3))
+        ))
+
+  } # log_model("inattention")
+
+
+
+  # orm_model("omas_02_42d")
+  # lm_model("omas_02_42d")
+  
+  # orm_model("omas_02_42d")
+  # lm_model("ankle_01_14d")
+  
+  # lrm_model("rtwb_02_42d")
+  
+  data |>
+  tbl_summary(
+    missing = "no", 
+    by = arm, 
+    statistic = list(all_continuous() ~ "{mean} ({sd})")
+    ) |>
+    add_n() |>
+    add_overall() |>
+    modify_spanning_header(c(stat_1, stat_2) ~ "**Study Arm**") |>
+    add_stat(fns = everything() ~ lm_model) |>
+    modify_header(
+      list(
+        MD ~ "**Difference in means**",
+        p_value ~ "**p-value**"
+        )
+      ) |>
+    modify_footnote(
+      MD ~ "Treatment effect estimated using linear regression"
+      )
+
+  # Use with MICE
+  library(mice)
+  mice_lm <- function(variable, ...){
+  df <- data |>
+    select(
+      arm, centre, sex, age, surgeon, site, days_to_operation,
+      hospital_stay, variable
+      )
+  imps <- mice(df, m = 100, seed = 1305, print = FALSE)
+  fit <- with(data = imps, exp = lm(as.formula(paste0(variable, " ~ arm + centre"))))
+  pool_fit <- summary(pool(fit))
+  data_frame(
+    # var = var,
+    MD = round(pool_fit$estimate[2], 2), 
+    p_value = round(pool_fit$p.value[2], 2)
+    ) |>
+    mutate(p_value = ifelse(
+      p_value < 0.001, "< 0.001", as.character(round(p_value, 3))
+      )) 
+    }
+
+
+```
+
+
+```{r}
+
+# When you want a continuous color scale for a categorized numeric variable
+
+   data |>
+   ggplot(aes(x = arm)) +
+    geom_bar(aes(fill = factor(los)), position = position_fill(reverse = TRUE)) +
+    geom_point(
+      aes(
+        y = as.numeric(as.character(los))/100, 
+        color = as.numeric(as.character(los))
+        ), 
+      alpha = 0.0
+      ) +
+    scale_fill_viridis(
+      guide = "none", option = "A", discrete = TRUE, begin = 0.2
+      ) +
+    scale_color_viridis("LoS", option = "A", begin = 0.2) +
+    xlab("") +
+    ylab("Proportion") +
+    theme(legend.key.size = unit(0.5, 'cm'))
+
+```
+
+```{r}
+   scale_linetype_discrete(
+      guide = guide_legend("Replicate", override.aes = list(color = col1))
+      )    
+```
+
+
+```{r}
+
+# When you want a continuous color scale for a categorized numeric variable
+
+   data |>
+   ggplot(aes(x = arm)) +
+    geom_bar(aes(fill = factor(los)), position = position_fill(reverse = TRUE)) +
+    geom_point(
+      aes(
+        y = as.numeric(as.character(los))/100, 
+        color = as.numeric(as.character(los))
+        ), 
+      alpha = 0.0
+      ) +
+    scale_fill_viridis(
+      guide = "none", option = "A", discrete = TRUE, begin = 0.2
+      ) +
+    scale_color_viridis("LoS", option = "A", begin = 0.2) +
+    xlab("") +
+    ylab("Proportion") +
+    theme(legend.key.size = unit(0.5, 'cm'))
+
+```
+
+
+
+```{r code_book}
+
+  print(summarytools::dfSummary(data), method = "render")
+
+```
+
+```{r sysinfo}
+
+  DescTools::SysInfo()
+
+```
