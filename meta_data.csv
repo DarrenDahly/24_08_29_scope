@@ -1,0 +1,834 @@
+var_name,labels
+start_date,Start Date
+end_date,End Date
+status,Response Type
+progress,Progress
+duration_in_seconds,Duration (in seconds)
+finished,Finished
+recorded_date,Recorded Date
+response_id,Response ID
+distribution_channel,Distribution Channel
+user_language,User Language
+qid43,"If you consent to take the points above and to take part in this survey, please tick 'yes' and continue"
+q1,List of Countries
+q2,What is your current career stage?
+q3,"How many years of research experience do you have in childhood obesity prevention trials?
+
+(please enter numeric values only)"
+q4,Have you undertaken training in trial methods?
+q5,"How many trials of interventions to prevent obesity, and/or to improve child health behaviours related to childhood obesity, in children from 0 to 5 years old have you been involved in to date?"
+q6,In what country/countries were the trials in which you are/were involved conducted?
+q7,Are you currently involved in a childhood obesity prevention trial/s?
+q8_1,"At what stage is your current trial(s)?
+
+Please select one option for each trial you are currently involved in - Trial 1"
+q8_2,"At what stage is your current trial(s)?
+
+Please select one option for each trial you are currently involved in - Trial 2"
+q8_3,"At what stage is your current trial(s)?
+
+Please select one option for each trial you are currently involved in - Trial 3"
+q8_4,"At what stage is your current trial(s)?
+
+Please select one option for each trial you are currently involved in - Trial 4"
+q9_1_1,"Please indicate your role(s) in childhood obesity prevention trials?
+
+(tick all that apply) - Principal Investigator - Current role(s)"
+q9_1_2,"Please indicate your role(s) in childhood obesity prevention trials?
+
+(tick all that apply) - Principal Investigator - Previous role(s)"
+q9_2_1,"Please indicate your role(s) in childhood obesity prevention trials?
+
+(tick all that apply) - Co-investigator - Current role(s)"
+q9_2_2,"Please indicate your role(s) in childhood obesity prevention trials?
+
+(tick all that apply) - Co-investigator - Previous role(s)"
+q9_3_1,"Please indicate your role(s) in childhood obesity prevention trials?
+
+(tick all that apply) - Postdoctoral researcher/Research Fellow - Current role(s)"
+q9_3_2,"Please indicate your role(s) in childhood obesity prevention trials?
+
+(tick all that apply) - Postdoctoral researcher/Research Fellow - Previous role(s)"
+q9_4_1,"Please indicate your role(s) in childhood obesity prevention trials?
+
+(tick all that apply) - Research Assistant - Current role(s)"
+q9_4_2,"Please indicate your role(s) in childhood obesity prevention trials?
+
+(tick all that apply) - Research Assistant - Previous role(s)"
+q9_5_1,"Please indicate your role(s) in childhood obesity prevention trials?
+
+(tick all that apply) - Trial statistician - Current role(s)"
+q9_5_2,"Please indicate your role(s) in childhood obesity prevention trials?
+
+(tick all that apply) - Trial statistician - Previous role(s)"
+q9_6_1,"Please indicate your role(s) in childhood obesity prevention trials?
+
+(tick all that apply) - Trial coordinator - Current role(s)"
+q9_6_2,"Please indicate your role(s) in childhood obesity prevention trials?
+
+(tick all that apply) - Trial coordinator - Previous role(s)"
+q9_7_1,"Please indicate your role(s) in childhood obesity prevention trials?
+
+(tick all that apply) - Trial site manager - Current role(s)"
+q9_7_2,"Please indicate your role(s) in childhood obesity prevention trials?
+
+(tick all that apply) - Trial site manager - Previous role(s)"
+q9_8_1,"Please indicate your role(s) in childhood obesity prevention trials?
+
+(tick all that apply) - Healthcare professional working on trial (e.g., research nurse, consultant) - Current role(s)"
+q9_8_2,"Please indicate your role(s) in childhood obesity prevention trials?
+
+(tick all that apply) - Healthcare professional working on trial (e.g., research nurse, consultant) - Previous role(s)"
+q9_9_1,"Please indicate your role(s) in childhood obesity prevention trials?
+
+(tick all that apply) - Steering/advisory committee member - Current role(s)"
+q9_9_2,"Please indicate your role(s) in childhood obesity prevention trials?
+
+(tick all that apply) - Steering/advisory committee member - Previous role(s)"
+q9_10_1,"Please indicate your role(s) in childhood obesity prevention trials?
+
+(tick all that apply) - Other (please specify) - Current role(s)"
+q9_10_2,"Please indicate your role(s) in childhood obesity prevention trials?
+
+(tick all that apply) - Other (please specify) - Previous role(s)"
+q9_10_text,"Please indicate your role(s) in childhood obesity prevention trials?
+
+(tick all that apply) - Other (please specify) - Text"
+q10_1,"How do you identify what outcomes to measure in trials of interventions to prevent obesity, and/or to improve child health behaviours related to childhood obesity, in children aged 0 to 5 years old?
+
+(tick all that apply) - Selected Choice - Trial team outcome preferences"
+q10_2,"How do you identify what outcomes to measure in trials of interventions to prevent obesity, and/or to improve child health behaviours related to childhood obesity, in children aged 0 to 5 years old?
+
+(tick all that apply) - Selected Choice - Patient and public perspective"
+q10_3,"How do you identify what outcomes to measure in trials of interventions to prevent obesity, and/or to improve child health behaviours related to childhood obesity, in children aged 0 to 5 years old?
+
+(tick all that apply) - Selected Choice - Practitioner perspective"
+q10_4,"How do you identify what outcomes to measure in trials of interventions to prevent obesity, and/or to improve child health behaviours related to childhood obesity, in children aged 0 to 5 years old?
+
+(tick all that apply) - Selected Choice - Information from a feasibility/pilot study"
+q10_5,"How do you identify what outcomes to measure in trials of interventions to prevent obesity, and/or to improve child health behaviours related to childhood obesity, in children aged 0 to 5 years old?
+
+(tick all that apply) - Selected Choice - Outcomes used in other trials"
+q10_6,"How do you identify what outcomes to measure in trials of interventions to prevent obesity, and/or to improve child health behaviours related to childhood obesity, in children aged 0 to 5 years old?
+
+(tick all that apply) - Selected Choice - Outcomes examined in systematic reviews"
+q10_7,"How do you identify what outcomes to measure in trials of interventions to prevent obesity, and/or to improve child health behaviours related to childhood obesity, in children aged 0 to 5 years old?
+
+(tick all that apply) - Selected Choice - Recommendation(s) from a professional body"
+q10_8,"How do you identify what outcomes to measure in trials of interventions to prevent obesity, and/or to improve child health behaviours related to childhood obesity, in children aged 0 to 5 years old?
+
+(tick all that apply) - Selected Choice - Recommendation(s) from a funding body"
+q10_9,"How do you identify what outcomes to measure in trials of interventions to prevent obesity, and/or to improve child health behaviours related to childhood obesity, in children aged 0 to 5 years old?
+
+(tick all that apply) - Selected Choice - Recommendations from regulatory body"
+q10_10,"How do you identify what outcomes to measure in trials of interventions to prevent obesity, and/or to improve child health behaviours related to childhood obesity, in children aged 0 to 5 years old?
+
+(tick all that apply) - Selected Choice - Recommended from a core outcome set"
+q10_11,"How do you identify what outcomes to measure in trials of interventions to prevent obesity, and/or to improve child health behaviours related to childhood obesity, in children aged 0 to 5 years old?
+
+(tick all that apply) - Selected Choice - The Core Outcome Measures in Effectiveness Trials (COMET) Initiative"
+q10_12,"How do you identify what outcomes to measure in trials of interventions to prevent obesity, and/or to improve child health behaviours related to childhood obesity, in children aged 0 to 5 years old?
+
+(tick all that apply) - Selected Choice - Other, please specify"
+q10_12_text,"How do you identify what outcomes to measure in trials of interventions to prevent obesity, and/or to improve child health behaviours related to childhood obesity, in children aged 0 to 5 years old?
+
+(tick all that apply) - Other, please specify   - Text"
+q11,"Had you heard of, or were you familiar with core outcome sets (before reading/viewing the information above)?"
+q12_1,"How did you hear about/become familiar with core outcome sets?
+
+(tick all that apply) - Selected Choice - I have used a core outcome set"
+q12_2,"How did you hear about/become familiar with core outcome sets?
+
+(tick all that apply) - Selected Choice - I worked in the development of a core outcome set"
+q12_3,"How did you hear about/become familiar with core outcome sets?
+
+(tick all that apply) - Selected Choice - I was involved as a participant in a Delphi or consensus process to develop a core outcome set"
+q12_4,"How did you hear about/become familiar with core outcome sets?
+
+(tick all that apply) - Selected Choice - I have seen a core outcome set referred to/discussed in a published paper"
+q12_5,"How did you hear about/become familiar with core outcome sets?
+
+(tick all that apply) - Selected Choice - I received education on core outcome sets as part of an academic course"
+q12_6,"How did you hear about/become familiar with core outcome sets?
+
+(tick all that apply) - Selected Choice - I have attended training on core outcome sets (external to academic coursework)"
+q12_7,"How did you hear about/become familiar with core outcome sets?
+
+(tick all that apply) - Selected Choice - I have attended a conference presentation/seminar/talk on core outcome set"
+q12_8,"How did you hear about/become familiar with core outcome sets?
+
+(tick all that apply) - Selected Choice - A colleague has told me about core outcome sets"
+q12_9,"How did you hear about/become familiar with core outcome sets?
+
+(tick all that apply) - Selected Choice - Other, please specify"
+q12_9_text,"How did you hear about/become familiar with core outcome sets?
+
+(tick all that apply) - Other, please specify - Text"
+q13,Are you familiar with these core outcome sets?
+q14_1_1,"How are you familiar with these core outcome sets? 
+
+(tick all that apply for each core outcome set) - I have used this core outcome set - Infant feeding COS"
+q14_1_2,"How are you familiar with these core outcome sets? 
+
+(tick all that apply for each core outcome set) - I have used this core outcome set - EPOCH COS up to 5 years"
+q14_2_1,"How are you familiar with these core outcome sets? 
+
+(tick all that apply for each core outcome set) - I worked in the development of a core outcome set - Infant feeding COS"
+q14_2_2,"How are you familiar with these core outcome sets? 
+
+(tick all that apply for each core outcome set) - I worked in the development of a core outcome set - EPOCH COS up to 5 years"
+q14_3_1,"How are you familiar with these core outcome sets? 
+
+(tick all that apply for each core outcome set) - I was involved as a participant in a Delphi or consensus process to develop a core outcome set - Infant feeding COS"
+q14_3_2,"How are you familiar with these core outcome sets? 
+
+(tick all that apply for each core outcome set) - I was involved as a participant in a Delphi or consensus process to develop a core outcome set - EPOCH COS up to 5 years"
+q14_4_1,"How are you familiar with these core outcome sets? 
+
+(tick all that apply for each core outcome set) - I have read the publication(s) on this core outcome set - Infant feeding COS"
+q14_4_2,"How are you familiar with these core outcome sets? 
+
+(tick all that apply for each core outcome set) - I have read the publication(s) on this core outcome set - EPOCH COS up to 5 years"
+q14_5_1,"How are you familiar with these core outcome sets? 
+
+(tick all that apply for each core outcome set) - I have seen this core outcome set reported in a trial - Infant feeding COS"
+q14_5_2,"How are you familiar with these core outcome sets? 
+
+(tick all that apply for each core outcome set) - I have seen this core outcome set reported in a trial - EPOCH COS up to 5 years"
+q14_6_1,"How are you familiar with these core outcome sets? 
+
+(tick all that apply for each core outcome set) - I have seen this core outcome set reported/discussed in another type of research (e.g. evidence synthesis, core outcome set development paper) - Infant feeding COS"
+q14_6_2,"How are you familiar with these core outcome sets? 
+
+(tick all that apply for each core outcome set) - I have seen this core outcome set reported/discussed in another type of research (e.g. evidence synthesis, core outcome set development paper) - EPOCH COS up to 5 years"
+q14_7_1,"How are you familiar with these core outcome sets? 
+
+(tick all that apply for each core outcome set) - I have attended a conference presentation/seminar/talk on this core outcome set - Infant feeding COS"
+q14_7_2,"How are you familiar with these core outcome sets? 
+
+(tick all that apply for each core outcome set) - I have attended a conference presentation/seminar/talk on this core outcome set - EPOCH COS up to 5 years"
+q14_8_1,"How are you familiar with these core outcome sets? 
+
+(tick all that apply for each core outcome set) - A colleague has told me about this core outcome set - Infant feeding COS"
+q14_8_2,"How are you familiar with these core outcome sets? 
+
+(tick all that apply for each core outcome set) - A colleague has told me about this core outcome set - EPOCH COS up to 5 years"
+q14_9_1,"How are you familiar with these core outcome sets? 
+
+(tick all that apply for each core outcome set) - Other, please specify - Infant feeding COS"
+q14_9_2,"How are you familiar with these core outcome sets? 
+
+(tick all that apply for each core outcome set) - Other, please specify - EPOCH COS up to 5 years"
+q14_9_text,"How are you familiar with these core outcome sets? 
+
+(tick all that apply for each core outcome set) - Other, please specify - Text"
+q15_1_1,"What would prevent you from using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Not knowing what the core outcome set is - Infant feeding COS"
+q15_1_2,"What would prevent you from using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Not knowing what the core outcome set is - EPOCH COS up to 5 years"
+q15_2_1,"What would prevent you from using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Not knowing why to use the core outcome set - Infant feeding COS"
+q15_2_2,"What would prevent you from using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Not knowing why to use the core outcome set - EPOCH COS up to 5 years"
+q15_3_1,"What would prevent you from using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Not knowing which COS to use - Infant feeding COS"
+q15_3_2,"What would prevent you from using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Not knowing which COS to use - EPOCH COS up to 5 years"
+q15_4_1,"What would prevent you from using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Preferring to use your own chosen outcomes - Infant feeding COS"
+q15_4_2,"What would prevent you from using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Preferring to use your own chosen outcomes - EPOCH COS up to 5 years"
+q15_5_1,"What would prevent you from using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Preferring to use outcomes used in other trials - Infant feeding COS"
+q15_5_2,"What would prevent you from using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Preferring to use outcomes used in other trials - EPOCH COS up to 5 years"
+q15_6_1,"What would prevent you from using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Feeling the core outcome set restricts what can be measured in a trial - Infant feeding COS"
+q15_6_2,"What would prevent you from using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Feeling the core outcome set restricts what can be measured in a trial - EPOCH COS up to 5 years"
+q15_7_1,"What would prevent you from using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Not knowing how best to measure the outcomes in the core outcome set - Infant feeding COS"
+q15_7_2,"What would prevent you from using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Not knowing how best to measure the outcomes in the core outcome set - EPOCH COS up to 5 years"
+q15_8_1,"What would prevent you from using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Perceived participant burden (e.g., the number of outcomes) - Infant feeding COS"
+q15_8_2,"What would prevent you from using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Perceived participant burden (e.g., the number of outcomes) - EPOCH COS up to 5 years"
+q15_9_1,"What would prevent you from using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Costs associated with measuring the core outcome set - Infant feeding COS"
+q15_9_2,"What would prevent you from using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Costs associated with measuring the core outcome set - EPOCH COS up to 5 years"
+q15_10_1,"What would prevent you from using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Feeling the core outcome set is not relevant for your geographical location(s)/resource setting(s) - Infant feeding COS"
+q15_10_2,"What would prevent you from using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Feeling the core outcome set is not relevant for your geographical location(s)/resource setting(s) - EPOCH COS up to 5 years"
+q15_11_1,"What would prevent you from using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Feeling the core outcome set is not relevant for your population(s) of interest - Infant feeding COS"
+q15_11_2,"What would prevent you from using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Feeling the core outcome set is not relevant for your population(s) of interest - EPOCH COS up to 5 years"
+q15_12_1,"What would prevent you from using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Feeling the core outcome set is not relevant for the type(s) of intervention you are examining - Infant feeding COS"
+q15_12_2,"What would prevent you from using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Feeling the core outcome set is not relevant for the type(s) of intervention you are examining - EPOCH COS up to 5 years"
+q15_13_1,"What would prevent you from using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Other members of the team not wanting to use the core outcome set - Infant feeding COS"
+q15_13_2,"What would prevent you from using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Other members of the team not wanting to use the core outcome set - EPOCH COS up to 5 years"
+q15_14_1,"What would prevent you from using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Trial regulation constraints - Infant feeding COS"
+q15_14_2,"What would prevent you from using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Trial regulation constraints - EPOCH COS up to 5 years"
+q15_15_1,"What would prevent you from using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - None - Infant feeding COS"
+q15_15_2,"What would prevent you from using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - None - EPOCH COS up to 5 years"
+q15_16_1,"What would prevent you from using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Other, please specify - Infant feeding COS"
+q15_16_2,"What would prevent you from using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Other, please specify - EPOCH COS up to 5 years"
+q15_16_text,"What would prevent you from using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Other, please specify - Text"
+q16_1_1,"What would increase your likelihood of using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Understanding what the core outcome set is - Infant feeding COS"
+q16_1_2,"What would increase your likelihood of using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Understanding what the core outcome set is - EPOCH COS up to 5 years"
+q16_2_1,"What would increase your likelihood of using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Knowing why to use the core outcome set - Infant feeding COS"
+q16_2_2,"What would increase your likelihood of using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Knowing why to use the core outcome set - EPOCH COS up to 5 years"
+q16_3_1,"What would increase your likelihood of using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Understanding how to use the core outcome set - Infant feeding COS"
+q16_3_2,"What would increase your likelihood of using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Understanding how to use the core outcome set - EPOCH COS up to 5 years"
+q16_4_1,"What would increase your likelihood of using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Feeling that the outcomes in the core outcome set are the most important outcomes to measure - Infant feeding COS"
+q16_4_2,"What would increase your likelihood of using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Feeling that the outcomes in the core outcome set are the most important outcomes to measure - EPOCH COS up to 5 years"
+q16_5_1,"What would increase your likelihood of using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Recommendation from funding body to use the core outcome set - Infant feeding COS"
+q16_5_2,"What would increase your likelihood of using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Recommendation from funding body to use the core outcome set - EPOCH COS up to 5 years"
+q16_6_1,"What would increase your likelihood of using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Recommendation from professional body to use the core outcome set - Infant feeding COS"
+q16_6_2,"What would increase your likelihood of using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Recommendation from professional body to use the core outcome set - EPOCH COS up to 5 years"
+q16_7_1,"What would increase your likelihood of using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Knowing other researchers who have used the core outcome set - Infant feeding COS"
+q16_7_2,"What would increase your likelihood of using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Knowing other researchers who have used the core outcome set - EPOCH COS up to 5 years"
+q16_8_1,"What would increase your likelihood of using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Having guidelines and resources available to support using the core outcome set - Infant feeding COS"
+q16_8_2,"What would increase your likelihood of using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Having guidelines and resources available to support using the core outcome set - EPOCH COS up to 5 years"
+q16_9_1,"What would increase your likelihood of using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Feeling the core outcome set is relevant for your geographical location(s)/resource setting(s) - Infant feeding COS"
+q16_9_2,"What would increase your likelihood of using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Feeling the core outcome set is relevant for your geographical location(s)/resource setting(s) - EPOCH COS up to 5 years"
+q16_10_1,"What would increase your likelihood of using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Feeling the core outcome set is relevant for your population(s) of interest - Infant feeding COS"
+q16_10_2,"What would increase your likelihood of using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Feeling the core outcome set is relevant for your population(s) of interest - EPOCH COS up to 5 years"
+q16_11_1,"What would increase your likelihood of using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Feeling the core outcome set is relevant for the type(s) of intervention you are examining - Infant feeding COS"
+q16_11_2,"What would increase your likelihood of using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Feeling the core outcome set is relevant for the type(s) of intervention you are examining - EPOCH COS up to 5 years"
+q16_12_1,"What would increase your likelihood of using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Having support for use of the core outcome set in the research team - Infant feeding COS"
+q16_12_2,"What would increase your likelihood of using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Having support for use of the core outcome set in the research team - EPOCH COS up to 5 years"
+q16_13_1,"What would increase your likelihood of using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Seeing the core outcome set previously used in other trials - Infant feeding COS"
+q16_13_2,"What would increase your likelihood of using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Seeing the core outcome set previously used in other trials - EPOCH COS up to 5 years"
+q16_14_1,"What would increase your likelihood of using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Association of the core outcome set with recognised groups (e.g., Translating Early Prevention of Obesity in Childhood (EPOCH-Translate)) - Infant feeding COS"
+q16_14_2,"What would increase your likelihood of using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Association of the core outcome set with recognised groups (e.g., Translating Early Prevention of Obesity in Childhood (EPOCH-Translate)) - EPOCH COS up to 5 years"
+q16_15_1,"What would increase your likelihood of using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Being previously involved in the development of the core outcome set - Infant feeding COS"
+q16_15_2,"What would increase your likelihood of using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Being previously involved in the development of the core outcome set - EPOCH COS up to 5 years"
+q16_16_1,"What would increase your likelihood of using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Being previously involved in the development of a different core outcome set - Infant feeding COS"
+q16_16_2,"What would increase your likelihood of using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Being previously involved in the development of a different core outcome set - EPOCH COS up to 5 years"
+q16_17_1,"What would increase your likelihood of using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Previously using a different core outcome set - Infant feeding COS"
+q16_17_2,"What would increase your likelihood of using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Previously using a different core outcome set - EPOCH COS up to 5 years"
+q16_18_1,"What would increase your likelihood of using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - None - Infant feeding COS"
+q16_18_2,"What would increase your likelihood of using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - None - EPOCH COS up to 5 years"
+q16_19_1,"What would increase your likelihood of using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Other, please specify - Infant feeding COS"
+q16_19_2,"What would increase your likelihood of using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Other, please specify - EPOCH COS up to 5 years"
+q16_19_text,"What would increase your likelihood of using the childhood obesity prevention core outcome set(s) in a trial?
+
+(tick all that apply for each core outcome set) - Other, please specify - Text"
+q17_1,"What sources do you use to identify what outcome measurement instruments to use in childhood obesity prevention trials?
+
+(tick all that apply) - Selected Choice - Patient and public perspective"
+q17_2,"What sources do you use to identify what outcome measurement instruments to use in childhood obesity prevention trials?
+
+(tick all that apply) - Selected Choice - Practitioner perspective"
+q17_3,"What sources do you use to identify what outcome measurement instruments to use in childhood obesity prevention trials?
+
+(tick all that apply) - Selected Choice - Information from a feasibility/pilot study"
+q17_4,"What sources do you use to identify what outcome measurement instruments to use in childhood obesity prevention trials?
+
+(tick all that apply) - Selected Choice - Outcomes measurement instruments used in other trials"
+q17_5,"What sources do you use to identify what outcome measurement instruments to use in childhood obesity prevention trials?
+
+(tick all that apply) - Selected Choice - Outcomes measurement instruments used in systematic reviews"
+q17_6,"What sources do you use to identify what outcome measurement instruments to use in childhood obesity prevention trials?
+
+(tick all that apply) - Selected Choice - Outcomes measurement instruments used in other study designs"
+q17_7,"What sources do you use to identify what outcome measurement instruments to use in childhood obesity prevention trials?
+
+(tick all that apply) - Selected Choice - Recommendation(s) from a professional body"
+q17_8,"What sources do you use to identify what outcome measurement instruments to use in childhood obesity prevention trials?
+
+(tick all that apply) - Selected Choice - Recommendation(s) from a funding body"
+q17_9,"What sources do you use to identify what outcome measurement instruments to use in childhood obesity prevention trials?
+
+(tick all that apply) - Selected Choice - Recommendations from regulatory body"
+q17_10,"What sources do you use to identify what outcome measurement instruments to use in childhood obesity prevention trials?
+
+(tick all that apply) - Selected Choice - Outcome measurement instruments developed by our team members"
+q17_11,"What sources do you use to identify what outcome measurement instruments to use in childhood obesity prevention trials?
+
+(tick all that apply) - Selected Choice - Other, please specify"
+q17_11_text,"What sources do you use to identify what outcome measurement instruments to use in childhood obesity prevention trials?
+
+(tick all that apply) - Other, please specify  - Text"
+q18_1,"What types of outcome measurement instruments do you currently use or plan to use in trials of childhood obesity prevention interventions?
+
+(tick all that apply) - Selected Choice - Existing questionnaires/surveys/scales"
+q18_2,"What types of outcome measurement instruments do you currently use or plan to use in trials of childhood obesity prevention interventions?
+
+(tick all that apply) - Selected Choice - Existing questionnaires/surveys/scales adapted for your trial"
+q18_3,"What types of outcome measurement instruments do you currently use or plan to use in trials of childhood obesity prevention interventions?
+
+(tick all that apply) - Selected Choice - Questions/survey/scale items designed for the trial"
+q18_4,"What types of outcome measurement instruments do you currently use or plan to use in trials of childhood obesity prevention interventions?
+
+(tick all that apply) - Selected Choice - Structured recall approaches (e.g. 24h diet recall)"
+q18_5,"What types of outcome measurement instruments do you currently use or plan to use in trials of childhood obesity prevention interventions?
+
+(tick all that apply) - Selected Choice - Diary approaches"
+q18_6,"What types of outcome measurement instruments do you currently use or plan to use in trials of childhood obesity prevention interventions?
+
+(tick all that apply) - Selected Choice - Healthcare record data"
+q18_7,"What types of outcome measurement instruments do you currently use or plan to use in trials of childhood obesity prevention interventions?
+
+(tick all that apply) - Selected Choice - Device assessed (e.g., accelerometer, pedometer)"
+q18_8,"What types of outcome measurement instruments do you currently use or plan to use in trials of childhood obesity prevention interventions?
+
+(tick all that apply) - Selected Choice - Digital photography methods"
+q18_9,"What types of outcome measurement instruments do you currently use or plan to use in trials of childhood obesity prevention interventions?
+
+(tick all that apply) - Selected Choice - Direct observation"
+q18_10,"What types of outcome measurement instruments do you currently use or plan to use in trials of childhood obesity prevention interventions?
+
+(tick all that apply) - Selected Choice - Anthropometric measures (e.g., scales, Dual energy x-ray absorptiometry)"
+q18_11,"What types of outcome measurement instruments do you currently use or plan to use in trials of childhood obesity prevention interventions?
+
+(tick all that apply) - Selected Choice - Other, please specify"
+q18_11_text,"What types of outcome measurement instruments do you currently use or plan to use in trials of childhood obesity prevention interventions?
+
+(tick all that apply) - Other, please specify - Text"
+q19_1_1,"How have you/do you plan to administer the outcome measurement instruments in a trial?
+
+(tick all that apply for each measurement approach) - In person - Questionnaires/ surveys/ scales"
+q19_1_2,"How have you/do you plan to administer the outcome measurement instruments in a trial?
+
+(tick all that apply for each measurement approach) - In person - Structured recall approaches"
+q19_1_3,"How have you/do you plan to administer the outcome measurement instruments in a trial?
+
+(tick all that apply for each measurement approach) - In person - Diary approaches"
+q19_1_4,"How have you/do you plan to administer the outcome measurement instruments in a trial?
+
+(tick all that apply for each measurement approach) - In person - Direct observation"
+q19_1_5,"How have you/do you plan to administer the outcome measurement instruments in a trial?
+
+(tick all that apply for each measurement approach) - In person - Anthropometric measures"
+q19_2_1,"How have you/do you plan to administer the outcome measurement instruments in a trial?
+
+(tick all that apply for each measurement approach) - Electronically (including online) - Questionnaires/ surveys/ scales"
+q19_2_2,"How have you/do you plan to administer the outcome measurement instruments in a trial?
+
+(tick all that apply for each measurement approach) - Electronically (including online) - Structured recall approaches"
+q19_2_3,"How have you/do you plan to administer the outcome measurement instruments in a trial?
+
+(tick all that apply for each measurement approach) - Electronically (including online) - Diary approaches"
+q19_2_4,"How have you/do you plan to administer the outcome measurement instruments in a trial?
+
+(tick all that apply for each measurement approach) - Electronically (including online) - Direct observation"
+q19_2_5,"How have you/do you plan to administer the outcome measurement instruments in a trial?
+
+(tick all that apply for each measurement approach) - Electronically (including online) - Anthropometric measures"
+q19_3_1,"How have you/do you plan to administer the outcome measurement instruments in a trial?
+
+(tick all that apply for each measurement approach) - By phone - Questionnaires/ surveys/ scales"
+q19_3_2,"How have you/do you plan to administer the outcome measurement instruments in a trial?
+
+(tick all that apply for each measurement approach) - By phone - Structured recall approaches"
+q19_3_3,"How have you/do you plan to administer the outcome measurement instruments in a trial?
+
+(tick all that apply for each measurement approach) - By phone - Diary approaches"
+q19_3_4,"How have you/do you plan to administer the outcome measurement instruments in a trial?
+
+(tick all that apply for each measurement approach) - By phone - Direct observation"
+q19_3_5,"How have you/do you plan to administer the outcome measurement instruments in a trial?
+
+(tick all that apply for each measurement approach) - By phone - Anthropometric measures"
+q19_4_1,"How have you/do you plan to administer the outcome measurement instruments in a trial?
+
+(tick all that apply for each measurement approach) - Via post - Questionnaires/ surveys/ scales"
+q19_4_2,"How have you/do you plan to administer the outcome measurement instruments in a trial?
+
+(tick all that apply for each measurement approach) - Via post - Structured recall approaches"
+q19_4_3,"How have you/do you plan to administer the outcome measurement instruments in a trial?
+
+(tick all that apply for each measurement approach) - Via post - Diary approaches"
+q19_4_4,"How have you/do you plan to administer the outcome measurement instruments in a trial?
+
+(tick all that apply for each measurement approach) - Via post - Direct observation"
+q19_4_5,"How have you/do you plan to administer the outcome measurement instruments in a trial?
+
+(tick all that apply for each measurement approach) - Via post - Anthropometric measures"
+q19_5_1,"How have you/do you plan to administer the outcome measurement instruments in a trial?
+
+(tick all that apply for each measurement approach) - A combination of above, please specify - Questionnaires/ surveys/ scales"
+q19_5_2,"How have you/do you plan to administer the outcome measurement instruments in a trial?
+
+(tick all that apply for each measurement approach) - A combination of above, please specify - Structured recall approaches"
+q19_5_3,"How have you/do you plan to administer the outcome measurement instruments in a trial?
+
+(tick all that apply for each measurement approach) - A combination of above, please specify - Diary approaches"
+q19_5_4,"How have you/do you plan to administer the outcome measurement instruments in a trial?
+
+(tick all that apply for each measurement approach) - A combination of above, please specify - Direct observation"
+q19_5_5,"How have you/do you plan to administer the outcome measurement instruments in a trial?
+
+(tick all that apply for each measurement approach) - A combination of above, please specify - Anthropometric measures"
+q19_6_1,"How have you/do you plan to administer the outcome measurement instruments in a trial?
+
+(tick all that apply for each measurement approach) - Other, please specify - Questionnaires/ surveys/ scales"
+q19_6_2,"How have you/do you plan to administer the outcome measurement instruments in a trial?
+
+(tick all that apply for each measurement approach) - Other, please specify - Structured recall approaches"
+q19_6_3,"How have you/do you plan to administer the outcome measurement instruments in a trial?
+
+(tick all that apply for each measurement approach) - Other, please specify - Diary approaches"
+q19_6_4,"How have you/do you plan to administer the outcome measurement instruments in a trial?
+
+(tick all that apply for each measurement approach) - Other, please specify - Direct observation"
+q19_6_5,"How have you/do you plan to administer the outcome measurement instruments in a trial?
+
+(tick all that apply for each measurement approach) - Other, please specify - Anthropometric measures"
+q19_6_text,"How have you/do you plan to administer the outcome measurement instruments in a trial?
+
+(tick all that apply for each measurement approach) - Other, please specify - Text"
+q20_1_1,"Where have you/will you collect data using outcome measurement instruments in your trial?
+
+(tick all that apply for each measurement approach) - Healthcare setting (e.g., hospital, family practice) - Questionnaires/ surveys /scales"
+q20_1_2,"Where have you/will you collect data using outcome measurement instruments in your trial?
+
+(tick all that apply for each measurement approach) - Healthcare setting (e.g., hospital, family practice) - Structured recall approaches"
+q20_1_3,"Where have you/will you collect data using outcome measurement instruments in your trial?
+
+(tick all that apply for each measurement approach) - Healthcare setting (e.g., hospital, family practice) - Diary approaches"
+q20_1_4,"Where have you/will you collect data using outcome measurement instruments in your trial?
+
+(tick all that apply for each measurement approach) - Healthcare setting (e.g., hospital, family practice) - Direct observation"
+q20_1_5,"Where have you/will you collect data using outcome measurement instruments in your trial?
+
+(tick all that apply for each measurement approach) - Healthcare setting (e.g., hospital, family practice) - Anthropometric measures"
+q20_2_1,"Where have you/will you collect data using outcome measurement instruments in your trial?
+
+(tick all that apply for each measurement approach) - Participants home - Questionnaires/ surveys /scales"
+q20_2_2,"Where have you/will you collect data using outcome measurement instruments in your trial?
+
+(tick all that apply for each measurement approach) - Participants home - Structured recall approaches"
+q20_2_3,"Where have you/will you collect data using outcome measurement instruments in your trial?
+
+(tick all that apply for each measurement approach) - Participants home - Diary approaches"
+q20_2_4,"Where have you/will you collect data using outcome measurement instruments in your trial?
+
+(tick all that apply for each measurement approach) - Participants home - Direct observation"
+q20_2_5,"Where have you/will you collect data using outcome measurement instruments in your trial?
+
+(tick all that apply for each measurement approach) - Participants home - Anthropometric measures"
+q20_3_1,"Where have you/will you collect data using outcome measurement instruments in your trial?
+
+(tick all that apply for each measurement approach) - Community setting - Questionnaires/ surveys /scales"
+q20_3_2,"Where have you/will you collect data using outcome measurement instruments in your trial?
+
+(tick all that apply for each measurement approach) - Community setting - Structured recall approaches"
+q20_3_3,"Where have you/will you collect data using outcome measurement instruments in your trial?
+
+(tick all that apply for each measurement approach) - Community setting - Diary approaches"
+q20_3_4,"Where have you/will you collect data using outcome measurement instruments in your trial?
+
+(tick all that apply for each measurement approach) - Community setting - Direct observation"
+q20_3_5,"Where have you/will you collect data using outcome measurement instruments in your trial?
+
+(tick all that apply for each measurement approach) - Community setting - Anthropometric measures"
+q20_4_1,"Where have you/will you collect data using outcome measurement instruments in your trial?
+
+(tick all that apply for each measurement approach) - Education setting - Questionnaires/ surveys /scales"
+q20_4_2,"Where have you/will you collect data using outcome measurement instruments in your trial?
+
+(tick all that apply for each measurement approach) - Education setting - Structured recall approaches"
+q20_4_3,"Where have you/will you collect data using outcome measurement instruments in your trial?
+
+(tick all that apply for each measurement approach) - Education setting - Diary approaches"
+q20_4_4,"Where have you/will you collect data using outcome measurement instruments in your trial?
+
+(tick all that apply for each measurement approach) - Education setting - Direct observation"
+q20_4_5,"Where have you/will you collect data using outcome measurement instruments in your trial?
+
+(tick all that apply for each measurement approach) - Education setting - Anthropometric measures"
+q20_5_1,"Where have you/will you collect data using outcome measurement instruments in your trial?
+
+(tick all that apply for each measurement approach) - Academic/research setting - Questionnaires/ surveys /scales"
+q20_5_2,"Where have you/will you collect data using outcome measurement instruments in your trial?
+
+(tick all that apply for each measurement approach) - Academic/research setting - Structured recall approaches"
+q20_5_3,"Where have you/will you collect data using outcome measurement instruments in your trial?
+
+(tick all that apply for each measurement approach) - Academic/research setting - Diary approaches"
+q20_5_4,"Where have you/will you collect data using outcome measurement instruments in your trial?
+
+(tick all that apply for each measurement approach) - Academic/research setting - Direct observation"
+q20_5_5,"Where have you/will you collect data using outcome measurement instruments in your trial?
+
+(tick all that apply for each measurement approach) - Academic/research setting - Anthropometric measures"
+q20_6_1,"Where have you/will you collect data using outcome measurement instruments in your trial?
+
+(tick all that apply for each measurement approach) - A combination of above, please specify - Questionnaires/ surveys /scales"
+q20_6_2,"Where have you/will you collect data using outcome measurement instruments in your trial?
+
+(tick all that apply for each measurement approach) - A combination of above, please specify - Structured recall approaches"
+q20_6_3,"Where have you/will you collect data using outcome measurement instruments in your trial?
+
+(tick all that apply for each measurement approach) - A combination of above, please specify - Diary approaches"
+q20_6_4,"Where have you/will you collect data using outcome measurement instruments in your trial?
+
+(tick all that apply for each measurement approach) - A combination of above, please specify - Direct observation"
+q20_6_5,"Where have you/will you collect data using outcome measurement instruments in your trial?
+
+(tick all that apply for each measurement approach) - A combination of above, please specify - Anthropometric measures"
+q20_7_1,"Where have you/will you collect data using outcome measurement instruments in your trial?
+
+(tick all that apply for each measurement approach) - Other, please specify - Questionnaires/ surveys /scales"
+q20_7_2,"Where have you/will you collect data using outcome measurement instruments in your trial?
+
+(tick all that apply for each measurement approach) - Other, please specify - Structured recall approaches"
+q20_7_3,"Where have you/will you collect data using outcome measurement instruments in your trial?
+
+(tick all that apply for each measurement approach) - Other, please specify - Diary approaches"
+q20_7_4,"Where have you/will you collect data using outcome measurement instruments in your trial?
+
+(tick all that apply for each measurement approach) - Other, please specify - Direct observation"
+q20_7_5,"Where have you/will you collect data using outcome measurement instruments in your trial?
+
+(tick all that apply for each measurement approach) - Other, please specify - Anthropometric measures"
+q20_7_text,"Where have you/will you collect data using outcome measurement instruments in your trial?
+
+(tick all that apply for each measurement approach) - Other, please specify  - Text"
+q21_1,"How important are the following factors when deciding what outcome measurement instrument(s) to use in a childhood obesity prevention trials?
+
+The following factors relate to all types of outcome measurement instruments - Ease of finding/identifying the outcome measurement instrument"
+q21_2,"How important are the following factors when deciding what outcome measurement instrument(s) to use in a childhood obesity prevention trials?
+
+The following factors relate to all types of outcome measurement instruments - Whether the measurement instrument has been used in similar trials previously"
+q21_3,"How important are the following factors when deciding what outcome measurement instrument(s) to use in a childhood obesity prevention trials?
+
+The following factors relate to all types of outcome measurement instruments - How the measurement instrument was developed"
+q21_4,"How important are the following factors when deciding what outcome measurement instrument(s) to use in a childhood obesity prevention trials?
+
+The following factors relate to all types of outcome measurement instruments - Who developed the measurement instrument"
+q21_5,"How important are the following factors when deciding what outcome measurement instrument(s) to use in a childhood obesity prevention trials?
+
+The following factors relate to all types of outcome measurement instruments - Relevance of the measurement instrument for your population"
+q21_6,"How important are the following factors when deciding what outcome measurement instrument(s) to use in a childhood obesity prevention trials?
+
+The following factors relate to all types of outcome measurement instruments - Whether the measurement instrument requires translation for your trial"
+q21_7,"How important are the following factors when deciding what outcome measurement instrument(s) to use in a childhood obesity prevention trials?
+
+The following factors relate to all types of outcome measurement instruments - Whether there is support for multiple languages when using the measurement instrument"
+q21_8,"How important are the following factors when deciding what outcome measurement instrument(s) to use in a childhood obesity prevention trials?
+
+The following factors relate to all types of outcome measurement instruments - Cultural sensitivity and appropriateness"
+q21_9,"How important are the following factors when deciding what outcome measurement instrument(s) to use in a childhood obesity prevention trials?
+
+The following factors relate to all types of outcome measurement instruments - Ease of administration"
+q21_10,"How important are the following factors when deciding what outcome measurement instrument(s) to use in a childhood obesity prevention trials?
+
+The following factors relate to all types of outcome measurement instruments - The number of items in the measurement instrument"
+q21_11,"How important are the following factors when deciding what outcome measurement instrument(s) to use in a childhood obesity prevention trials?
+
+The following factors relate to all types of outcome measurement instruments - Length of time for researcher to administer"
+q21_12,"How important are the following factors when deciding what outcome measurement instrument(s) to use in a childhood obesity prevention trials?
+
+The following factors relate to all types of outcome measurement instruments - Length of time for participants to complete"
+q21_13,"How important are the following factors when deciding what outcome measurement instrument(s) to use in a childhood obesity prevention trials?
+
+The following factors relate to all types of outcome measurement instruments - Participants comprehensibility of the measurement instrument (e.g., literacy requirements)"
+q21_14,"How important are the following factors when deciding what outcome measurement instrument(s) to use in a childhood obesity prevention trials?
+
+The following factors relate to all types of outcome measurement instruments - Clinicians comprehensibility of the measurement instrument"
+q21_15,"How important are the following factors when deciding what outcome measurement instrument(s) to use in a childhood obesity prevention trials?
+
+The following factors relate to all types of outcome measurement instruments - Participants mental ability to complete the measurement"
+q21_16,"How important are the following factors when deciding what outcome measurement instrument(s) to use in a childhood obesity prevention trials?
+
+The following factors relate to all types of outcome measurement instruments - Participants physical ability to complete the measurement"
+q21_17,"How important are the following factors when deciding what outcome measurement instrument(s) to use in a childhood obesity prevention trials?
+
+The following factors relate to all types of outcome measurement instruments - Whether the measurement instrument requires specialist training to administer"
+q21_18,"How important are the following factors when deciding what outcome measurement instrument(s) to use in a childhood obesity prevention trials?
+
+The following factors relate to all types of outcome measurement instruments - Whether the measurement instrument requires specialist equipment/device(s) to administer"
+q21_19,"How important are the following factors when deciding what outcome measurement instrument(s) to use in a childhood obesity prevention trials?
+
+The following factors relate to all types of outcome measurement instruments - If a designated place is needed to administer/complete the measurement instrument"
+q21_20,"How important are the following factors when deciding what outcome measurement instrument(s) to use in a childhood obesity prevention trials?
+
+The following factors relate to all types of outcome measurement instruments - The mode of administration (i.e., in person, online, by phone)"
+q21_21,"How important are the following factors when deciding what outcome measurement instrument(s) to use in a childhood obesity prevention trials?
+
+The following factors relate to all types of outcome measurement instruments - When the measurement instrument is completed (e.g., in participants own time, during a healthcare visit)"
+q21_22,"How important are the following factors when deciding what outcome measurement instrument(s) to use in a childhood obesity prevention trials?
+
+The following factors relate to all types of outcome measurement instruments - Acceptability of the measurement instrument to clinicians/practice staff"
+q21_23,"How important are the following factors when deciding what outcome measurement instrument(s) to use in a childhood obesity prevention trials?
+
+The following factors relate to all types of outcome measurement instruments - Acceptability of the measurement instrument to participants"
+q21_24,"How important are the following factors when deciding what outcome measurement instrument(s) to use in a childhood obesity prevention trials?
+
+The following factors relate to all types of outcome measurement instruments - Costs associated with using the measurement instrument"
+q21_25,"How important are the following factors when deciding what outcome measurement instrument(s) to use in a childhood obesity prevention trials?
+
+The following factors relate to all types of outcome measurement instruments - How the instrument handles sensitive information"
+q21_26,"How important are the following factors when deciding what outcome measurement instrument(s) to use in a childhood obesity prevention trials?
+
+The following factors relate to all types of outcome measurement instruments - Risk of adverse outcomes following use of the measurement instrument"
+q21_27,"How important are the following factors when deciding what outcome measurement instrument(s) to use in a childhood obesity prevention trials?
+
+The following factors relate to all types of outcome measurement instruments - Ease of score calculation"
+q21_28,"How important are the following factors when deciding what outcome measurement instrument(s) to use in a childhood obesity prevention trials?
+
+The following factors relate to all types of outcome measurement instruments - The types of analyses that can be conducted with the data obtained"
+q21_29,"How important are the following factors when deciding what outcome measurement instrument(s) to use in a childhood obesity prevention trials?
+
+The following factors relate to all types of outcome measurement instruments - Likelihood of significant findings from using the measurement instrument"
+q21_30,"How important are the following factors when deciding what outcome measurement instrument(s) to use in a childhood obesity prevention trials?
+
+The following factors relate to all types of outcome measurement instruments - The response format of the measurement instrument (i.e., Likert scale, dichotomous responses)"
+q21_31,"How important are the following factors when deciding what outcome measurement instrument(s) to use in a childhood obesity prevention trials?
+
+The following factors relate to all types of outcome measurement instruments - The recall period for the measurement instrument (i.e., over the past week, month, year)"
+q21_32,"How important are the following factors when deciding what outcome measurement instrument(s) to use in a childhood obesity prevention trials?
+
+The following factors relate to all types of outcome measurement instruments - How well the measurement instrument reflects the construct being measured (content validity)"
+q21_33,"How important are the following factors when deciding what outcome measurement instrument(s) to use in a childhood obesity prevention trials?
+
+The following factors relate to all types of outcome measurement instruments - The degree to which the measurement instrument is free from measurement error (reliability)"
+q21_34,"How important are the following factors when deciding what outcome measurement instrument(s) to use in a childhood obesity prevention trials?
+
+The following factors relate to all types of outcome measurement instruments - The ability of the measurement instrument to detect change over time (responsiveness)"
+q21_35,"How important are the following factors when deciding what outcome measurement instrument(s) to use in a childhood obesity prevention trials?
+
+The following factors relate to all types of outcome measurement instruments - The degree that scores on the measurement instrument reflect a ‘gold standard’, where applicable (criterion validity)"
+q21_36,"How important are the following factors when deciding what outcome measurement instrument(s) to use in a childhood obesity prevention trials?
+
+The following factors relate to all types of outcome measurement instruments - The degree that a translated or culturally adapted measurement instrument adequately reflects the original version (cross-cultural validity)"
+q21_37,"How important are the following factors when deciding what outcome measurement instrument(s) to use in a childhood obesity prevention trials?
+
+The following factors relate to all types of outcome measurement instruments - The degree of interrelatedness among the items in the measure (internal consistency)"
+q21_38,"How important are the following factors when deciding what outcome measurement instrument(s) to use in a childhood obesity prevention trials?
+
+The following factors relate to all types of outcome measurement instruments - The degree that scores on the measurement instrument reflect the dimensionality of the construct being measured (structural validity)"
+q22,"Is there anything else you would like us to know about what influences your choice of outcomes and/or use of the two core outcome sets for trials of interventions to prevent childhood obesity, and/or to improve child health behaviours related to childhood obesity?"
+q23,"Is there anything else you would like us to know about what influences your choice of measurement instruments for trials of interventions to prevent childhood obesity, and/or to improve child health behaviours related to childhood obesity?"
+q24_1,How did you hear about this survey? - Direct email invitation
+q24_2,How did you hear about this survey? - Received information from organisation/society
+q24_3,How did you hear about this survey? - Saw information about the study online
+q24_4,How did you hear about this survey? - Word of mouth
+qid46,We greatly value your time and input. If you would like to receive the final results of this study when published please enter your email below.
