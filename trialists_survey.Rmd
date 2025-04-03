@@ -31,6 +31,8 @@ editor_options:
   library(plotly)
   library(gtsummary)
   library(patchwork)
+  library(janitor)
+  library(likert)
   
 ```
 
@@ -78,14 +80,18 @@ editor_options:
 
 ```{r}
 
-  finished_n <- table(data$finished)["TRUE"]
+  finished_n <- table(data$finished)["Yes"]
   finished_p <- round(finished_n / nrow(data) * 100, 1)
+  consent_n <- table(data$qid43)["Yes"]
+  consent_p <- round(consent_n / nrow(data) * 100, 1)
 
 ```
 
 # Survey completion
 
-There are `r start_n` total responses in the pharmacist survey dataset. Of these, `r finished_n` finished the survey (`r finished_p`%). 
+There are `r start_n` total responses in the survey dataset. Of these, `r finished_n` finished the survey (`r finished_p`%). 
+
+Across all `r start_n` respondents, `r consent_n` provided consent (`r consent_p`%), including 100% of those who completed the survey.
 
 Survey start dates ranged from `r min(as.Date(data$start_date))` to `r max(as.Date(data$start_date))`. 
 
@@ -119,7 +125,7 @@ Survey accrual was similar for those who did vs didn't finish the survey.
 ```{r}
 
   data |>
-    filter(finished == "FALSE") |>
+    filter(finished == "No") |>
   ggplot(aes(x = progress)) +
     geom_histogram(fill = col4) +
     xlab("Survey progress (%)") +
@@ -135,7 +141,7 @@ Survey accrual was similar for those who did vs didn't finish the survey.
 ```{r}
 
   data |>
-    filter(finished == "TRUE") |>
+    filter(finished == "Yes") |>
   ggplot(aes(x = duration_in_minutes)) +
     scale_x_log10() +
     geom_histogram(fill = col4) +
@@ -152,7 +158,7 @@ Survey accrual was similar for those who did vs didn't finish the survey.
 ```{r}
 
   data |>
-    filter(finished == "FALSE") |>
+    filter(finished == "No") |>
   ggplot(aes(x = duration_in_minutes)) +
     scale_x_log10() +
     geom_histogram(fill = col4) +
@@ -170,20 +176,26 @@ Survey accrual was similar for those who did vs didn't finish the survey.
 
   data_frame(
     n_obs = unlist(map(
-      data[data$finished == "TRUE",], function(x) table(is.na(x))["FALSE"]
+      data[data$finished == "Yes",], function(x) table(is.na(x))["FALSE"]
       )),
     variable_name = names(data)
     ) |>
-    mutate(variable_name = reorder(factor(variable_name), n_obs)) |>
-    filter(n_obs != finished_n) |>
+    mutate(variable_name = reorder(factor(variable_name), n_obs)) |> 
+    # filter(n_obs != finished_n) |> 
+    mutate(q = as.numeric(gsub("q", "", str_split_i(variable_name, "_", 1)))) |>
   ggplot(aes(x = variable_name, y = n_obs, fill = n_obs)) +
     geom_bar(stat = "identity") +
     coord_flip() +
     labs(
       x = "Variable", y = "N non-missing values for variables with any missings"
       ) +
+    facet_wrap(~q, scales = "free_y") +
     scale_fill_viridis(guide = "none", option = "A", begin = 0.3) +
-    theme(panel.grid = element_blank()) 
+    theme(
+      panel.grid = element_blank(), 
+      panel.background = element_rect(fill = NA, color = col4), 
+      axis.text.y = element_text(size = 5)
+      ) 
 
 ```
 <br>
@@ -195,892 +207,1589 @@ Survey accrual was similar for those who did vs didn't finish the survey.
 
   data_frame(
     n_obs = unlist(map(
-      data[data$finished == "FALSE",], function(x) table(is.na(x))["FALSE"]
+      data[data$finished == "No",], function(x) table(is.na(x))["FALSE"]
       )),
     variable_name = names(data)
     ) |>
     mutate(variable_name = reorder(factor(variable_name), n_obs)) |> 
-    filter(n_obs != nrow(data) - finished_n) |>
+    mutate(q = as.numeric(gsub("q", "", str_split_i(variable_name, "_", 1)))) |>
   ggplot(aes(x = variable_name, y = n_obs, fill = n_obs)) +
     geom_bar(stat = "identity") +
     coord_flip() +
     labs(
       x = "Variable", y = "N non-missing values for variables with any missings"
       ) +
+    facet_wrap(~q, scales = "free_y") +
     scale_fill_viridis(guide = "none", option = "A", begin = 0.3) +
+    theme(
+      panel.grid = element_blank(), 
+      panel.background = element_rect(fill = NA, color = col4), 
+      axis.text.y = element_text(size = 5)
+      ) 
+
+```
+<br>
+<br>
+
+Finishers vs non-finishers on Q1-Q7
+
+```{r}
+
+  data |>
+    select(finished, q2:q5, q7) |> 
+  tbl_summary(
+    by = finished,
+    missing = "ifany", 
+    missing_text = "Missing values",
+    type = list(q4 ~ "categorical"),
+    statistic =  all_categorical() ~ "{n}/{N_nonmiss} ({p}%)"
+    ) |>
+    modify_spanning_header(c(stat_1, stat_2) ~ "**Finished survey?**") |>
+    add_p(test = list(
+      all_categorical() ~ "chisq.test"
+      ))
+```
+
+`r attr(data$q1, "label")`
+ 
+```{r}
+
+  data |>
+    group_by(finished) |>
+    mutate(n_f = n()) |>
+    group_by(finished, q1) |>
+    mutate(n_q1 = n()) |>
+    mutate(q1_prop = n_q1/n_f) |>
+    select(q1, finished, q1_prop) |>
+    distinct() |>
+    ungroup() |>
+    mutate(q1 = reorder(factor(q1), q1_prop)) |>
+  ggplot(aes(x = q1, y = q1_prop, group = finished, fill = finished)) +
+    geom_bar(stat = "identity", position = "dodge") +
+    scale_fill_viridis(
+      "Finished\nsurvey", option = "A", begin = 0.4, discrete = TRUE
+      ) +
+    coord_flip() +
+    xlab("") +
+    ylab("Proportion of respondents") +
+    theme(legend.position = "bottom")
+
+```
+
+
+`r attr(data$q6, "label")`
+ 
+```{r}
+
+  data |>
+    group_by(finished) |>
+    mutate(n_f = n()) |>
+    group_by(finished, q6) |>
+    mutate(n_q6 = n()) |>
+    mutate(q6_prop = n_q6/n_f) |>
+    select(q6, finished, q6_prop) |>
+    distinct() |>
+    ungroup() |>
+    mutate(q6 = reorder(factor(q6), q6_prop)) |>
+  ggplot(aes(x = q6, y = q6_prop, group = finished, fill = finished)) +
+    geom_bar(stat = "identity", position = "dodge") +
+    scale_fill_viridis(
+      "Finished\nsurvey", option = "A", begin = 0.4, discrete = TRUE
+      ) +
+    coord_flip() +
+    xlab("") +
+    ylab("Proportion of respondents") +
+    theme(legend.position = "bottom")
+
+```
+
+# Results
+
+## (Q1-7) Repondent characteristics
+
+From this point forward the dataset it limited to the `r finished_n` participants who completed the survey. 
+
+```{r}
+
+  data <- filter(data, finished == "Yes")
+
+```
+
+#### Table: Respondent characteristics
+
+```{r}
+
+  data |>
+    select(q2:q5, q7) |> 
+  tbl_summary(
+    missing = "ifany", 
+    missing_text = "Missing values",
+    type = list(q4 ~ "categorical"),
+    statistic =  all_categorical() ~ "{n}/{N_nonmiss} ({p}%)"
+    ) 
+
+```
+
+#### Figure: `r attr(data$q1, "label")` (Q1)
+ 
+```{r}
+
+  data |>
+    select(q1) |>
+    na.omit() |>
+    group_by(q1) |>
+    mutate(n_q1 = n()) |>
+    mutate(q1_prop = n_q1/nrow(data)) |>
+    select(q1, q1_prop) |>
+    distinct() |>
+    ungroup() |>
+    mutate(q1 = reorder(factor(q1), q1_prop)) |>
+  ggplot(aes(x = q1, y = q1_prop, fill = q1_prop)) +
+    geom_bar(stat = "identity", position = "dodge") +
+   scale_fill_viridis(guide = "none", option = "A", begin = 0.4) +
+    coord_flip() +
+    xlab("") +
+    ylab("Proportion of respondents") +
+    theme(legend.position = "bottom")
+
+```
+
+#### Table: `r attr(data$q1, "label")` (Q1)
+
+```{r}
+
+  data |>
+    select(q1) |>
+    group_by(q1) |>
+    mutate(n_q1 = n()) |>
+    mutate(q1_prop = n_q1/nrow(data)) |>
+    select(q1, q1_prop) |>
+    distinct() |>
+    ungroup() |>
+    mutate(q1 = reorder(factor(q1), q1_prop)) |>
+  tbl_summary(
+    missing = "ifany", 
+    missing_text = "Missing values",
+    type = list(q1 ~ "categorical"),
+    statistic =  all_categorical() ~ "{n}/{N_nonmiss} ({p}%)"
+    ) 
+```
+
+#### Figure: `r attr(data$q2, "label")` (Q2)
+
+```{r}
+
+  ggplot(data, aes(x = q2)) +
+    geom_bar(fill = col4) +
+    coord_flip() +
+    xlab("") +
+    ylab("Number of respondents") +
     theme(panel.grid = element_blank())
 
 ```
-<br>
-<br>
+
+#### Figure: `r attr(data$q5, "label")` (Q5)
 
 ```{r}
 
-  data |>
-    select(finished, q1:q5, q7) |> 
+  ggplot(data, aes(x = q5)) +
+    geom_bar(fill = col4) +
+    coord_flip() +
+    xlab("") +
+    ylab("Number of respondents") +
+    theme(panel.grid = element_blank())
+
+```
+
+#### Figure: `r attr(data$q6, "label")` (Q6)
+ 
+```{r}
+
+  # unique(data$q6)[order(unique(data$q6))]
+  all_countries <- gsub(" and the|\\\n| and", ",", data$q6) %>%
+    gsub(" - uk", "", .) |>
+    tolower() |>
+    str_split(",") |>
+    unlist() |>
+    trimws() |>
+    str_to_title() 
+
+  all_countries[all_countries == "Uk"] <- "UK"
+  all_countries[all_countries == "England"] <- "UK"
+  all_countries[all_countries == "Usa"] <- "USA"
+  all_countries[all_countries == "Us"] <- "USA"
+  all_countries[all_countries == "Ksa"] <- "KSA"
+  all_countries[all_countries == "United States"] <- "USA"
+  all_countries[all_countries == ""] <- NA
+  all_countries[grepl("Canada", all_countries)] <- NA
+
+  
+  all_countries <- c(
+    all_countries, "Canada", "South Africa", "India", "China"
+    ) |>
+    na.omit()
+  
+  n_r <- length(data$q6[!is.na(data$q6)])
+  n_c <- length(all_countries)
+
+  data_frame(country = all_countries) |>
+    group_by(country) |>
+    mutate(n_q6 = n()) |>
+    select(country, n_q6) |>
+    distinct() |>
+    ungroup() |>
+    mutate(country = reorder(factor(country), n_q6)) |> 
+  ggplot(aes(x = country, y = n_q6, fill = n_q6)) +
+    geom_bar(stat = "identity", position = "dodge") +
+   scale_fill_viridis(guide = "none", option = "A", begin = 0.4) +
+    coord_flip() +
+    xlab("") +
+    ylab("Number of repondents working on trials in this country") +
+    theme(legend.position = "bottom") +
+    labs(
+      caption = paste0(n_c, " countries, across ", n_r, " respondents")
+      ) +
+    theme(panel.grid = element_blank())
+
+```
+
+#### Table: `r attr(data$q6, "label")` (Q6)
+
+```{r}
+
+  data_frame(country = all_countries) |>
+    na.omit() |>
+    group_by(country) |>
+    mutate(n_q6 = n()) |>
+    ungroup() |>
+    mutate(country = reorder(factor(country), n_q6))  |>
+    select(-n_q6) |>
   tbl_summary(
-    by = finished,
     missing = "ifany", 
     missing_text = "Missing values",
-    # type = list(
-    #   everything() ~ "categorical"
-    #   ), 
     statistic =  all_categorical() ~ "{n}/{N_nonmiss} ({p}%)"
-    ) |>
-    modify_spanning_header(c(stat_1, stat_2) ~ "**Finished survey?**") |>
-    add_overall() |>
-    add_p(test = list(
-      all_categorical() ~ "chisq.test"
-      ))
+    ) 
 ```
 
-```
+## (Q8) Trial Status
 
-
-
+#### Figure: Number of current trials for each respondent
 
 ```{r}
 
   data |>
-    select(finished, starts_with("q2") & !contains("text")) |> 
+    select(response_id, starts_with("q8")) |> 
+    pivot_longer(-response_id) |>
+    mutate(name = gsub("q8_", "", name)) |>
     na.omit() |>
+  ggplot(aes(x = name, fill = name)) +
+    geom_bar() +
+    coord_flip() +
+    scale_fill_viridis(
+      guide = "none", option = "A", discrete = TRUE, begin = 0.4
+      ) +
+    xlab("Current number of trials") +
+    ylab("Number of respondents")
+      
+```
+
+#### Figure: Status of all current trials
+
+```{r}
+
+  data |>
+    select(response_id, starts_with("q8")) |>
+    pivot_longer(-response_id) |>
+    mutate(name = gsub("q8_", "", name)) |>
+    na.omit() |>
+    group_by(value) |>
+    mutate(n = n()) |>
+    ungroup() |>
+    mutate(value = reorder(factor(value), n)) |>
+  ggplot(aes(x = value, fill = value)) +
+    geom_bar() +
+    coord_flip() +
+    scale_fill_viridis(
+      guide = "none", option = "A", discrete = TRUE, begin = 0.4
+      ) +
+    xlab("") +
+    ylab("Number of trials")
+      
+```
+
+#### Figure: Number and status of all current trials, by respondent
+
+```{r}
+
+  data |>
+    select(response_id, starts_with("q8")) |> 
+    pivot_longer(-response_id) |>
+    mutate(name = gsub("q8_", "", name)) |>
+    na.omit() |>
+    arrange(response_id, value) |>
+    group_by(response_id) |>
+    mutate(flag = 1, trial = cumsum(flag), n_trials = max(trial)) |>
+    ungroup() |>
+    mutate(response_id = reorder(factor(response_id), n_trials)) |>
+  ggplot(aes(x = trial, y = response_id, fill = value)) +
+    geom_tile() +
+    scale_fill_viridis("", option = "A", discrete = TRUE, begin = 0.4) +
+    xlab("Trial") +
+    ylab("Respondent") +
+    theme(
+      axis.text.y = element_blank(),
+      legend.position = "bottom", 
+      panel.grid = element_blank()
+      )
+  
+```
+
+#### Table: `r attr(data$q8_1, "label")`-4
+
+```{r}
+
+  data |>
+    select(starts_with("q8")) |>
   tbl_summary(
-    by = finished,
     missing = "ifany",
     missing_text = "Missing values",
-    type = list(
-      q2_1 ~ "categorical"
-      ), 
     statistic =  all_categorical() ~ "{n}/{N_nonmiss} ({p}%)"
-    ) |>
-    add_overall() |>
-    modify_spanning_header(c(stat_1, stat_2) ~ "**Finished survey?**") |>
-    add_p(test = list(
-      all_categorical() ~ "chisq.test"
-      ))
-```
-<br>
-<br>
-
-### Free text
-
-```{r}
-
-  data |> select(finished, q2_5_5_text) |> na.omit()
+    ) 
 
 ```
-<br>
-<br>
 
-# Sources of information (Q3)
+```{r, eval = FALSE}
 
-## Q3.1
-
-**Table. `r attr(data$q3_1, "label")`**
-
-```{r}
+#### Missing pattern for q8, looks file
 
   data |>
-    select(finished, starts_with("q3_1_") & !contains("text")) |> 
-  tbl_summary(
-    by = finished,
-    missing = "ifany", 
-    missing_text = "Missing values",
-    # type = list(
-    #   everything() ~ "categorical"
-    #   ), 
-    statistic =  all_categorical() ~ "{n}/{N_nonmiss} ({p}%)"
-    ) |>
-    add_overall() |>
-    modify_spanning_header(c(stat_1, stat_2) ~ "**Finished survey?**") |>
-    add_p(test = list(
-      all_categorical() ~ "chisq.test"
-      ))
+    select(response_id, starts_with("q8")) |>
+    mutate(
+      m_8_1 = !is.na(q8_1), 
+      m_8_2 = !is.na(q8_2),
+      m_8_4 = !is.na(q8_3), 
+      m_8_5 = !is.na(q8_4)
+      )|>
+    select(response_id, starts_with("m_8")) |>
+    pivot_longer(-response_id) |> 
+    group_by(response_id) |>
+    mutate(trials = sum(value)) |>
+    ungroup() |>
+    mutate(response_id = reorder(factor(response_id), trials)) |>
+  ggplot(aes(x = name, y = response_id, fill = value)) +
+    geom_tile() +
+    scale_fill_viridis(
+      "Not missing", option = "A", discrete = TRUE, begin = 0.4
+      ) +
+    xlab("Trial") +
+    ylab("Respondent") +
+    theme(
+      axis.text.y = element_blank(),
+      legend.position = "bottom", 
+      panel.grid = element_blank()
+      )
+    
 ```
-<br>
-<br>
 
-**Figure `r attr(data$q3_1, "label")`**
+## (Q9) Current and previous roles working on childhood obesity prevention trials 
+
+#### Figure: Current and previous roles working on childhood obesity prevention trials across all respondents
 
 ```{r}
 
+  levs <- names(select(data, starts_with("q9"), -contains("text")))
+# meta_data$labels[meta_data$var_name %in% levs]
+  labs <- c(
+    "PI", "PI", "Co-I", "Co-I", "Researcher", "Researcher", "RA", "RA", 
+    "Trial statistician", "Trial statistician", 
+    "Trial coordinator", "Trial coordinator", "Site manager", "Site manager",
+    "HCP", "HCP", "Committee member", "Committee member", "Other", "Other"
+    )
   df <- data |>
-    filter(!is.na(q3_1)) |>
-    select(response_id, finished, starts_with("q3_t1_")) |> 
-    group_by(finished) |>
-    mutate(n_fin = n()) |>
+    select(response_id, starts_with("q9"), -contains("text")) |>
+    map_df(as.character) |>
+    pivot_longer(-response_id, names_to = "role", values_to = "type") |>
+    filter(type != "0") |>
+    na.omit() |>
+    mutate(role = factor(role, levels = levs, labels = labs)) |>
+    group_by(role) |>
+    mutate(n = n()) |>
     ungroup() |>
-    pivot_longer(-c(response_id, finished, n_fin)) |>
-    filter(value != "No") 
+    mutate(role = reorder(factor(role), n)) 
+  
+  n_r <- length(unique(df$response_id))
+  n_c <- nrow(df)
 
   df |>
-    group_by(value, finished, n_fin) |>
-    summarise(n = n()) |>
-    mutate(prop = n / n_fin) |>
-  ggplot(aes(x = value, fill = prop, y = prop)) +
-    geom_bar(stat = "identity") +
+  ggplot(aes(x = role, fill = type)) +
+    geom_bar() +
+    coord_flip() +
+    scale_fill_viridis("", option = "A", discrete = TRUE, begin = 0.4) +
+    theme(
+      panel.grid = element_blank(), 
+      legend.position = "bottom"
+      ) +
+    labs(y = "Number of respondents", x = "") + 
+    labs(
+      caption = paste0(n_c, " roles, across ", n_r, " respondents")
+      ) 
+
+```
+
+#### Free text
+
+```{r}
+
+  data$q9_10_text |> 
+  na.omit() |>
+  paste(collapse = "; ")
+
+```
+
+## (Q10) Methods for identifying outcomes 
+
+#### Figure: Methods for identifying outcomes as reported across all respondents
+
+```{r}
+
+  levs <- names(select(data, starts_with("q10"), -contains("text")))
+  x <- unlist(
+    str_split(meta_data$labels[meta_data$var_name %in% levs], "Choice - ")
+    )
+  labs <- x[1:length(x) %% 2 == 0]
+
+  df <- data |>
+    select(response_id, starts_with("q10"), -contains("text")) |> 
+    map_df(as.character) |>
+    pivot_longer(-response_id, names_to = "source", values_to = "value") |>
+    filter(value != "0") |>
+    na.omit() |> 
+    mutate(source = factor(source, levels = levs, labels = labs)) |>
+    group_by(source) |>
+    mutate(n = n()) |>
+    ungroup() |>
+    mutate(source = reorder(factor(source), n)) 
+  
+  n_r <- length(unique(df$response_id))
+  n_c <- nrow(df)
+
+  df |>
+  ggplot(aes(x = source, fill = n)) +
+    geom_bar() +
+    coord_flip() +
     scale_fill_viridis(guide = "none", option = "A", begin = 0.4) +
-    coord_flip() +
-    xlab("") +
-    ylab("Number of respondent's endorsing") +
-    facet_wrap(~finished) +
-    theme(panel.grid = element_blank()) +
-    labs(caption= paste0("n = ", nrow(df), " total endorsements across ", length(unique(df$response_id)), " unique respondents"))
-    
-```
-<br>
-<br>
+    theme(
+      panel.grid = element_blank(), 
+      legend.position = "bottom"
+      ) +
+    labs(y = "Number of respondents", x = "") + 
+    labs(
+      caption = paste0(n_c, " sources, across ", n_r, " respondents")
+      ) 
 
-### Free text
+```
+
+#### Free text
 
 ```{r}
 
-  data |> select(q3_1_9_text, finished) |> na.omit()
+  data$q10_12_text |> 
+  na.omit() |>
+  paste(collapse = "; ")
 
 ```
-<br>
-<br>
 
-## Q3.2:5
+## (Q11 & 12) Familiarity with core outcome sets 
 
-**Table. Sources of information**
+Among the `r length(unique(data$response_id))` respondents, `r length(data$q11[data$q11 == "Yes"])` indicated they had heard of, or were familiar with, core outcome sets prior to taking the survey. 
+
+#### Figure: Sources of previous exposure to core outcome sets
+
+```{r}
+
+  levs <- names(select(data, starts_with("q12"), -contains("text")))
+  x <- unlist(
+    str_split(meta_data$labels[meta_data$var_name %in% levs], "Choice - ")
+    )
+  labs <- x[1:length(x) %% 2 == 0]
+
+  df <- data |>
+    select(response_id, starts_with("q12"), -contains("text")) |> 
+    map_df(as.character) |>
+    pivot_longer(-response_id, names_to = "source", values_to = "value") |>
+    filter(value != "0") |>
+    na.omit() |> 
+    mutate(source = factor(source, levels = levs, labels = labs)) |>
+    group_by(source) |>
+    mutate(n = n()) |>
+    ungroup() |>
+    mutate(source = reorder(factor(source), n)) 
+  
+  n_r <- length(unique(df$response_id))
+  n_c <- nrow(df)
+
+  df |>
+  ggplot(aes(x = source, fill = n)) +
+    geom_bar() +
+    coord_flip() +
+    scale_fill_viridis(guide = "none", option = "A", begin = 0.4) +
+    theme(
+      panel.grid = element_blank(), 
+      legend.position = "bottom"
+      ) +
+    labs(y = "Number of respondents", x = "") + 
+    labs(
+      caption = paste0(n_c, " sources, across ", n_r, " respondents")
+      ) 
+
+```
+
+Note: I don't see an actual open text variable associated with this set of responses. 
+
+## (Q13) Familarity with existing core outcomes sets for childhood obesity trials 
+
+#### Table: Familarity with existing core outcomes sets for childhood obesity trials
 
 ```{r}
 
   data |>
-    select(finished, q3_2:q3_5, -q3_3_4_text) |> 
+    select(q13) |>
   tbl_summary(
-    by = finished,
-    missing = "ifany", 
+    missing = "ifany",
     missing_text = "Missing values",
-    # type = list(
-    #   q2_1 ~ "categorical"
-    #   ), 
+    statistic =  all_categorical() ~ "{n}/{N_nonmiss} ({p}%)"
+    ) 
+
+```
+
+## (Q14) Sources of familiarity with existing core outcomes sets for childhood obesity 
+
+#### Figure: Sources of previous exposure to core outcome sets
+
+```{r}
+
+  levs <- names(select(data, starts_with("q14"), -contains("text")))
+  labs <- meta_data$labels[meta_data$var_name %in% levs]
+
+  df <- data |>
+    select(response_id, starts_with("q14"), -contains("text")) |> 
+    map_df(as.character) |>
+    pivot_longer(-response_id, names_to = "source", values_to = "value") |>
+    filter(value != "0") |>
+    na.omit() |> 
+    mutate(source = factor(source, levels = levs, labels = labs)) |> 
+    separate_wider_delim(
+      source, delim = " - ", names = c("source", "cos"), cols_remove = TRUE
+      ) |>
+    group_by(source) |>
+    mutate(n = n()) |>
+    ungroup() |>
+    mutate(source = reorder(factor(source), n, decreasing = TRUE))
+  
+  n_r <- length(unique(df$response_id))
+  n_c <- nrow(df)
+
+  df |>
+  ggplot(aes(x = source, fill = cos)) +
+    geom_bar() +
+    coord_flip() +
+    scale_fill_viridis(
+      "", option = "A", begin = 0.4, discrete = TRUE
+      ) +
+    facet_wrap(~cos) +
+    theme(
+      panel.grid = element_blank(), 
+      legend.position = "bottom"
+      ) +
+    labs(y = "Number of respondents", x = "") + 
+    labs(
+      caption = paste0(n_c, " sources, across ", n_r, " respondents")
+      ) 
+
+```
+
+```{r}
+
+  attr(df$source, "label") <- "Source"
+
+  df |>
+    select(-response_id, -value, -n) |>
+  tbl_summary(
+    by = cos, 
+    missing = "ifany",
+    missing_text = "Missing values",
     statistic =  all_categorical() ~ "{n}/{N_nonmiss} ({p}%)"
     ) |>
-    add_overall() |>
-    modify_spanning_header(c(stat_1, stat_2) ~ "**Finished survey?**") |>
-    add_p(test = list(
-      all_categorical() ~ "chisq.test"
-      ))
-```
-<br>
-<br>
+    add_n() |>
+    modify_footnote(n ~ paste0(n_c, " sources endorsed by ", n_r, " respondents"))
 
-### Free text
+```
+
+Note: No actual open text field for "other". 
+
+## (Q15) Barriers to using childhood obesity prevention core outcome set(s) in a trial 
+
+#### Figure: Barriers to using childhood obesity prevention core outcome set(s) in a trial
 
 ```{r}
 
-  data |> select(q3_3_4_text, finished) |> na.omit()
+  levs <- names(select(data, starts_with("q15"), -contains("text")))
+  labs <- meta_data$labels[meta_data$var_name %in% levs]
+
+  df <- data |>
+    select(response_id, starts_with("q15"), -contains("text")) |> 
+    map_df(as.character) |>
+    pivot_longer(-response_id, names_to = "barrier", values_to = "value") |>
+    filter(value != "0") |>
+    na.omit() |> 
+    mutate(barrier = factor(barrier, levels = levs, labels = labs)) |> 
+    separate_wider_delim(
+      barrier, delim = " - ", names = c("barrier", "cos"), cols_remove = TRUE
+      ) |>
+    group_by(barrier) |>
+    mutate(n = n()) |>
+    ungroup() |>
+    mutate(barrier = reorder(factor(barrier), n, decreasing = TRUE))
+  
+  n_r <- length(unique(df$response_id))
+  n_c <- nrow(df)
+
+  df |>
+  ggplot(aes(x = barrier, fill = cos)) +
+    geom_bar() +
+    coord_flip() +
+    scale_fill_viridis(
+      "", option = "A", begin = 0.4, discrete = TRUE
+      ) +
+    facet_wrap(~cos) +
+    theme(
+      panel.grid = element_blank(), 
+      legend.position = "bottom"
+      ) +
+    labs(y = "Number of respondents", x = "") + 
+    labs(
+      caption = paste0(n_c, " barriers, across ", n_r, " respondents")
+      ) 
 
 ```
-<br>
-<br>
-
-## Q3.7
-
-**Figure: In what format would you prefer to receive correspondence about important medicine safety related information? (ranks)**
 
 ```{r}
 
-  levs <- names(select(data, starts_with("q3_7")))
-  labs <- unlist(map(data[levs], function(x) attr(x, "label")))
+  attr(df$barrier, "label") <- "Barrier"
 
-  data |>
-    select(response_id, finished, starts_with("q3_7")) |> 
-    pivot_longer(-c(finished, response_id)) |>
-    mutate(name = factor(name, levels = levs, labels = labs)) |>
-    mutate(value = as.numeric(value)) |>
-    na.omit() |>
+  df |>
+    select(-response_id, -value, -n) |>
+  tbl_summary(
+    by = cos, 
+    missing = "ifany",
+    missing_text = "Missing values",
+    statistic =  all_categorical() ~ "{n}/{N_nonmiss} ({p}%)"
+    ) |>
+    add_n() |>
+    modify_footnote(n ~ paste0(n_c, " sources endorsed by ", n_r, " respondents"))
+
+```
+
+#### Free text
+
+```{r}
+
+  data$q15_16_text |> 
+  na.omit() |>
+  paste(collapse = "; ")
+
+```
+
+## (Q16) Faciliators to using childhood obesity prevention core outcome set(s) in a trial 
+
+#### Figure: Faciliators to using childhood obesity prevention core outcome set(s) in a trial
+
+```{r}
+
+  levs <- names(select(data, starts_with("q16"), -contains("text")))
+  labs <- meta_data$labels[meta_data$var_name %in% levs]
+
+  df <- data |>
+    select(response_id, starts_with("q16"), -contains("text")) |> 
+    map_df(as.character) |>
+    pivot_longer(-response_id, names_to = "facilitator", values_to = "value") |>
+    filter(value != "0") |>
+    na.omit() |> 
+    mutate(facilitator = factor(facilitator, levels = levs, labels = labs)) |> 
+    separate_wider_delim(
+      facilitator, delim = " - ", names = c("facilitator", "cos"), cols_remove = TRUE
+      ) |>
+    group_by(facilitator) |>
+    mutate(n = n()) |>
+    ungroup() |>
+    mutate(facilitator = reorder(factor(facilitator), n, decreasing = TRUE))
+  
+  n_r <- length(unique(df$response_id))
+  n_c <- nrow(df)
+
+  df |>
+  ggplot(aes(x = facilitator, fill = cos)) +
+    geom_bar() +
+    coord_flip() +
+    scale_fill_viridis(
+      "", option = "A", begin = 0.4, discrete = TRUE
+      ) +
+    facet_wrap(~cos) +
+    theme(
+      panel.grid = element_blank(), 
+      legend.position = "bottom"
+      ) +
+    labs(y = "Number of respondents", x = "") + 
+    labs(
+      caption = paste0(n_c, " facilitators, across ", n_r, " respondents")
+      ) 
+
+```
+
+```{r}
+
+  attr(df$facilitator, "label") <- "Facilitator"
+
+  df |>
+    select(-response_id, -value, -n) |>
+  tbl_summary(
+    by = cos, 
+    missing = "ifany",
+    missing_text = "Missing values",
+    statistic =  all_categorical() ~ "{n}/{N_nonmiss} ({p}%)"
+    ) |>
+    add_n() |>
+    modify_footnote(n ~ paste0(n_c, " facilitators endorsed by ", n_r, " respondents"))
+
+```
+
+#### Free text
+
+```{r}
+
+  data$q16_19_text |> 
+  na.omit() |>
+  paste(collapse = "; ")
+
+```
+
+## (Q17) Sources to identify outcomes in childhood obesity prevention trials 
+
+#### Figure: Sources to identify outcomes in childhood obesity prevention trials
+
+```{r}
+
+  levs <- names(select(data, starts_with("q17"), -contains("text")))
+  labs <- meta_data$labels[meta_data$var_name %in% levs]
+
+  df <- data |>
+    select(response_id, starts_with("q17"), -contains("text")) |> 
+    map_df(as.character) |>
+    pivot_longer(-response_id, names_to = "source", values_to = "value") |>
+    filter(value != "0") |>
+    na.omit() |> 
+    mutate(source = factor(source, levels = levs, labels = labs)) |> 
+    group_by(source) |>
+    mutate(n = n()) |>
+    ungroup() |>
+    mutate(source = reorder(factor(source), n, decreasing = TRUE))
+  
+  n_r <- length(unique(df$response_id))
+  n_c <- nrow(df)
+
+  df |>
+  ggplot(aes(x = source, fill = n)) +
+    geom_bar() +
+    coord_flip() +
+    scale_fill_viridis(guide = "none", option = "A", begin = 0.4) +
+    theme(
+      panel.grid = element_blank(), 
+      legend.position = "bottom"
+      ) +
+    labs(y = "Number of respondents", x = "") + 
+    labs(
+      caption = paste0(n_c, " sources, across ", n_r, " respondents")
+      ) 
+
+```
+
+```{r}
+
+  attr(df$source, "label") <- "Sources"
+
+  df |>
+    select(-response_id, -value, -n) |>
+  tbl_summary(
+    missing = "ifany",
+    missing_text = "Missing values",
+    statistic =  all_categorical() ~ "{n}/{N_nonmiss} ({p}%)"
+    ) |>
+    add_n() |>
+    modify_footnote(n ~ paste0(n_c, " sources endorsed by ", n_r, " respondents"))
+
+```
+
+
+Note: No actual free text field for "other" responses. 
+
+## (Q18) Currently planned/used outcomes 
+
+#### Figure: Currently planned/used outcomes in childhood obesity prevention interventions.
+
+```{r}
+
+  levs <- names(select(data, starts_with("q18"), -contains("text")))
+  x <- unlist(
+    str_split(meta_data$labels[meta_data$var_name %in% levs], "Choice - ")
+    )
+  labs <- x[1:length(x) %% 2 == 0]
+
+  df <- data |>
+    select(response_id, starts_with("q18"), -contains("text")) |> 
+    map_df(as.character) |>
+    pivot_longer(-response_id, names_to = "outcome", values_to = "value") |>
+    filter(value != "0") |>
+    na.omit() |> 
+    mutate(outcome = factor(outcome, levels = levs, labels = labs)) |>
+    group_by(outcome) |>
+    mutate(n = n()) |>
+    ungroup() |>
+    mutate(outcome = reorder(factor(outcome), n))
+  
+  n_r <- length(unique(df$response_id))
+  n_c <- nrow(df)
+
+  df |>
+  ggplot(aes(x = outcome, fill = n)) +
+    geom_bar() +
+    coord_flip() +
+    scale_fill_viridis(guide = "none", option = "A", begin = 0.4) +
+    theme(
+      panel.grid = element_blank(), 
+      legend.position = "bottom"
+      ) +
+    labs(y = "Number of respondents", x = "") + 
+    labs(
+      caption = paste0(n_c, " outcomes, across ", n_r, " respondents")
+      ) 
+
+```
+
+#### Free text
+
+```{r}
+
+  data$q18_11_text |> 
+  na.omit() |>
+  paste(collapse = "; ")
+
+```
+
+## (Q19) Administration 
+
+#### Figure: Route and method of administration across all responses
+
+```{r}
+
+  df <- data |>
+    select(response_id, starts_with("q19") & !contains("_6")) |>
+    pivot_longer(-response_id) |>
+    na.omit()
+
+  df$name[grepl("q19_1_", df$name)] <- "In person"
+  df$name[grepl("q19_2_", df$name)] <- "Electronically"
+  df$name[grepl("q19_3_", df$name)] <- "By phone"
+  df$name[grepl("q19_4_", df$name)] <- "Via post"
+  df$name[grepl("q19_5_", df$name)] <- "Combination"
+
+  attr(df$name, "label") <- "Route"
+  attr(df$value, "label") <- "Method"
+  
+  df |>
+    group_by(value, name) |>
+    mutate(n = n()) |>
+    ungroup() |>
+    mutate(value = reorder(factor(value), n)) |>
+  ggplot(aes(y = value, x = name, color = n)) +
+    geom_jitter(alpha = 0.8) +
+    geom_tile(fill = NA) +
+    geom_text(
+      aes(label = n), 
+      position = position_nudge(x = 0.4, y = -0.4),
+      color = col1,
+      size = 3
+      ) +
+    scale_color_viridis(
+      guide = "none", option = "A", discrete = FALSE, begin = 0.5
+      ) +
+    xlab("") +
+    ylab("") +
+    theme(panel.grid = element_blank()) +
+    ggtitle("How have you/do you plan to administer\nthe outcome measurement instruments in a trial?") +
+    labs(caption = "n = 288 total reponses across 45 respondents")
+  
+  # ggsave("plots/q19.png", device = "png", 
+  #   scale = 0.6, units = "cm", 
+  #   width = 33.87, height = 19.05, dpi = 300
+  #   )
+    
+```
+
+#### Table: Route and method of administration across all responses
+
+```{r}
+
+  df |>
+    select(-response_id) |>
+  tbl_cross(
+    margin = c("column", "row"), 
+    percent = "cell"
+  )
+
+```
+
+#### Figure: Route and method of administration across all responses
+
+```{r}
+
+  g1 <- df |>
+    ggplot(aes(x = value, fill = name)) +
+      geom_bar() +
+      scale_fill_viridis(
+        "", option = "A", begin = 0.4, discrete = TRUE
+        ) +
+      coord_flip() +
+      ylab("Number of responses") +
+      xlab("")
+
+  g2 <- df |>
+    ggplot(aes(x = value, fill = name)) +
+      geom_bar(position = "fill") +
+      scale_fill_viridis(
+        "", option = "A", begin = 0.4, discrete = TRUE
+        ) +
+      coord_flip() +
+      ylab("Proportion of responses") +
+      xlab("") +
+      theme(axis.text.y = element_blank())
+  
+  g1 + g2 + plot_layout(guides = "collect") & theme(legend.position = "bottom")
+
+```
+
+#### Figure: Method of administration across all responses
+
+```{r}
+
+  df |>
+    group_by(value) |>
+    mutate(n = n()) |>
+    ungroup() |>
+    mutate(value = reorder(factor(value), n)) |>
+  ggplot(aes(x = value, fill = n)) +
+    geom_bar() +
+    scale_fill_viridis(
+      guide = "none", option = "A", discrete = FALSE, begin = 0.5
+      ) +
+    coord_flip() +
+    xlab("") +
+    ylab("Responses") +
+    labs(caption = "n = 288 total reponses across 45 respondents")
+  
+```
+
+#### Figure: Route of administration across all responses
+
+```{r}
+
+  df |>
     group_by(name) |>
-    mutate(total_ranks = 1 / sum(value)) |> 
-    ungroup() |>
-    mutate(name = reorder(factor(name), total_ranks)) |> 
-  ggplot(aes(x = name, fill = factor(value))) +
-    geom_bar(position = position_fill(reverse = TRUE)) +
-    scale_fill_viridis(
-      "Rank", option = "A", begin = 0.3, discrete = TRUE
-      ) +
-    guides(fill = guide_legend(nrow = 1)) +
-    coord_flip() +
-    theme(
-      panel.grid = element_blank(), 
-      legend.position = "bottom"
-      ) +
-    labs(x = "", y = "")
-    
-```
-<br>
-<br>
-
-## Q3.6, 8, 9
-
-**Table. Usefulness**
-
-```{r}
-
-  data |>
-    select(finished, q3_6, q3_8, q3_9) |>
-  tbl_summary(
-    by = finished,
-    missing = "ifany", 
-    missing_text = "Missing values",
-    # type = list(
-    #   q2_1 ~ "categorical"
-    #   ), 
-    statistic =  all_categorical() ~ "{n}/{N_nonmiss} ({p}%)"
-    ) |>
-    add_overall() |>
-    modify_spanning_header(c(stat_1, stat_2) ~ "**Finished survey?**") |>
-    add_p(test = list(
-      all_categorical() ~ "chisq.test"
-      ))
-```
-<br>
-<br>
-
-**Figure: Usefulness**
-
-```{r}
-
-  levs <- names(select(data, q3_6, q3_8, q3_9))
-  labs <- unlist(map(data[levs], function(x) attr(x, "label")))
-
-  data |>
-    select(response_id, finished, q3_6, q3_8, q3_9) |>
-    pivot_longer(-c(finished, response_id)) |>
-    mutate(name = factor(name, levels = levs, labels = labs)) |>
-    na.omit() |>
-  ggplot(aes(x = name, fill = value)) +
-    geom_bar(position = position_fill(reverse = TRUE)) +
-    scale_fill_viridis(
-      "Rank", option = "A", begin = 0.3, discrete = TRUE
-      ) +
-    guides(fill = guide_legend(nrow = 1)) +
-    coord_flip() +
-    scale_x_discrete(labels = function(x) str_wrap(x, 30)) +
-    theme(
-      panel.grid = element_blank(), 
-      legend.position = "bottom"
-      ) +
-    labs(x = "", y = "")
-```
-<br>
-<br>
-
-# DHPCs (Q4)
-
-## Q4.1
-
-**Table: What is the main safety issue associated with Sodium Valproate which led to a DHPC letter in April 2018?** 
-
-```{r}
-
-  data |>
-    select(finished, q4_1) |> 
-  tbl_summary(
-    by = "finished",
-    missing = "ifany", 
-    missing_text = "Missing values",
-    # type = list(
-    #   q2_1 ~ "categorical"
-    #   ), 
-    statistic =  all_categorical() ~ "{n}/{N_nonmiss} ({p}%)"
-    )  |>
-    add_overall() |>
-    modify_spanning_header(c(stat_1, stat_2) ~ "**Finished survey?**") |>
-    add_p(test = list(
-      all_categorical() ~ "chisq.test"
-      ))
-
-```
-<br>
-<br>
-
-Query: check possible values here
-
-## Q4.2
-
-**Figure: What actions did you take following the most recent DHPC issued on April 2018 on sodium valproate? (finishers only)**
-
-```{r}
-
-  df <- data |>
-    filter(!is.na(q4_2)) |>
-    select(response_id, starts_with("q4_t2_")) |> 
-    pivot_longer(-c(response_id)) |>
-    filter(value != "No") |>
-    group_by(value) |>
     mutate(n = n()) |>
     ungroup() |>
-    mutate(value = reorder(factor(value), n)) 
-
-  df |>
-  ggplot(aes(x = value, fill = n)) +
+    mutate(name = reorder(factor(name), n)) |>
+  ggplot(aes(x = name, fill = n)) +
     geom_bar() +
     scale_fill_viridis(
-      guide = "none", option = "A", begin = 0.4, discrete = FALSE
+      guide = "none", option = "A", discrete = FALSE, begin = 0.5
       ) +
     coord_flip() +
     xlab("") +
-    ylab("Number of respondent's endorsing") +
-    theme(panel.grid = element_blank()) +
-    scale_x_discrete(labels = function(x) str_wrap(x, 30)) +
-    labs(caption= paste0("n = ", nrow(df), " total endorsements across ", length(unique(df$response_id)), " unique respondents"))
-    
-```
-<br>
-<br>
-
-**Table: What actions did you take following the most recent DHPC issued on April 2018 on sodium valproate?**
-
-```{r}
-
-  data |>
-    select(finished, starts_with("q4_2_") & !contains("text")) |>
-  tbl_summary(
-    by = finished,
-    missing = "ifany", 
-    missing_text = "Missing values",
-    # type = list(
-    #   everything() ~ "categorical"
-    #   ), 
-    statistic =  all_categorical() ~ "{n}/{N_nonmiss} ({p}%)"
-    )  |>
-    add_overall() |>
-    modify_spanning_header(c(stat_1, stat_2) ~ "**Finished survey?**") |>
-    add_p(test = list(
-      all_categorical() ~ "chisq.test"
-      ))
+    ylab("Responses")  +
+    labs(caption = "n = 288 total reponses across 45 respondents")
   
 ```
-<br>
-<br>
 
-### Free text
-
-```{r}
-
-  data |> select(q4_2_6_text, finished) |> na.omit()
-
-```
-<br>
-<br>
-
-## Q4.3
-
-**Table:What are the main safety issues associated with quinolone and fluoroquinolone antibiotics (e.g. ciprofloxacin, levofloxacin, moxifloxacin) which led to a recent DHPC?**
+#### Figure: Method of administration - In person
 
 ```{r}
 
   data |>
-    select(finished, q4_3) |> 
-  tbl_summary(
-    by = "finished",
-    missing = "ifany", 
-    missing_text = "Missing values",
-    # type = list(
-    #   q2_1 ~ "categorical"
-    #   ), 
-    statistic =  all_categorical() ~ "{n}/{N_nonmiss} ({p}%)"
-    )  |>
-    add_overall() |>
-    modify_spanning_header(c(stat_1, stat_2) ~ "**Finished survey?**") |>
-    add_p(test = list(
-      all_categorical() ~ "chisq.test"
-      ))
+    select(response_id, starts_with("q19_1")) |> 
+    pivot_longer(-response_id) |>
+    mutate(name = gsub("q19_1_", "", name)) |>
+    na.omit() |> 
+    group_by(value) |>
+    mutate(n = n()) |>
+    ungroup() |>
+    mutate(value = reorder(factor(value), n)) |>
+  ggplot(aes(x = value, fill = value)) +
+    geom_bar() +
+    coord_flip() +
+    scale_fill_viridis(
+      guide = "none", option = "A", discrete = TRUE, begin = 0.4
+      ) +
+    xlab("") +
+    ylab("Number of trials")
+      
 ```
-<br>
-<br>
 
-Query: check possible values here
+#### Figure: Method of administration - Electronically
 
-## Q4.4
+```{r}
 
-**Figure: What actions did you take following the most recent DHPC on quinolone and fluoroquinolone prescribing issued in June 2023? (finishers only)**
+  data |>
+    select(response_id, starts_with("q19_2")) |> 
+    pivot_longer(-response_id) |>
+    mutate(name = gsub("q19_2_", "", name)) |>
+    na.omit() |> 
+    group_by(value) |>
+    mutate(n = n()) |>
+    ungroup() |>
+    mutate(value = reorder(factor(value), n)) |>
+  ggplot(aes(x = value, fill = value)) +
+    geom_bar() +
+    coord_flip() +
+    scale_fill_viridis(
+      guide = "none", option = "A", discrete = TRUE, begin = 0.4
+      ) +
+    xlab("") +
+    ylab("Number of trials")
+      
+```
+
+#### Figure: Method of administration - By phone
+
+```{r}
+
+  data |>
+    select(response_id, starts_with("q19_3")) |> 
+    pivot_longer(-response_id) |>
+    mutate(name = gsub("q19_3_", "", name)) |>
+    na.omit() |> 
+    group_by(value) |>
+    mutate(n = n()) |>
+    ungroup() |>
+    mutate(value = reorder(factor(value), n)) |>
+  ggplot(aes(x = value, fill = value)) +
+    geom_bar() +
+    coord_flip() +
+    scale_fill_viridis(
+      guide = "none", option = "A", discrete = TRUE, begin = 0.4
+      ) +
+    xlab("") +
+    ylab("Number of trials")
+      
+```
+
+#### Figure: Method of administration - Via post
+
+```{r}
+
+  data |>
+    select(response_id, starts_with("q19_4")) |> 
+    pivot_longer(-response_id) |>
+    mutate(name = gsub("q19_4_", "", name)) |>
+    na.omit() |> 
+    group_by(value) |>
+    mutate(n = n()) |>
+    ungroup() |>
+    mutate(value = reorder(factor(value), n)) |>
+  ggplot(aes(x = value, fill = value)) +
+    geom_bar() +
+    coord_flip() +
+    scale_fill_viridis(
+      guide = "none", option = "A", discrete = TRUE, begin = 0.4
+      ) +
+    xlab("") +
+    ylab("Number of trials")
+      
+```
+
+#### Figure: Method of administration - Combination
+
+```{r}
+
+  data |>
+    select(response_id, starts_with("q19_5")) |> 
+    pivot_longer(-response_id) |>
+    mutate(name = gsub("q19_5_", "", name)) |>
+    na.omit() |> 
+    group_by(value) |>
+    mutate(n = n()) |>
+    ungroup() |>
+    mutate(value = reorder(factor(value), n)) |>
+  ggplot(aes(x = value, fill = value)) +
+    geom_bar() +
+    coord_flip() +
+    scale_fill_viridis(
+      guide = "none", option = "A", discrete = TRUE, begin = 0.4
+      ) +
+    xlab("") +
+    ylab("Number of trials")
+      
+```
+
+#### Free text
+
+```{r}
+
+  data |>
+    select(starts_with("q19_6")) |> 
+    remove_empty() |> 
+    unlist() |>
+    unique() 
+
+```
+
+## (Q20) Location 
+
+#### Figure: Method and setting of administration across all responses
 
 ```{r}
 
   df <- data |>
-    filter(!is.na(q4_4)) |>
-    select(response_id, starts_with("q4_t4_")) |> 
-    pivot_longer(-c(response_id)) |>
-    filter(value != "No") |>
-    group_by(value) |>
-    mutate(n = n()) |>
-    ungroup() |>
-    mutate(value = reorder(factor(value), n)) 
+    select(response_id, starts_with("q20") & !contains("_7")) |>
+    pivot_longer(-response_id) |>
+    na.omit()
+
+  df$name[grepl("q20_1_", df$name)] <- "Healthcare"
+  df$name[grepl("q20_2_", df$name)] <- "Home"
+  df$name[grepl("q20_3_", df$name)] <- "Community"
+  df$name[grepl("q20_4_", df$name)] <- "Education"
+  df$name[grepl("q20_5_", df$name)] <- "Academic/research"
+  df$name[grepl("q20_6_", df$name)] <- "Combination"
+
+  attr(df$name, "label") <- "Setting"
+  attr(df$value, "label") <- "Method"
 
   df |>
-  ggplot(aes(x = value, fill = n)) +
-    geom_bar() +
-    scale_fill_viridis(
-      guide = "none", option = "A", begin = 0.4, discrete = FALSE
+    group_by(value, name) |>
+    mutate(n = n()) |>
+    ungroup() |>
+    mutate(value = reorder(factor(value), n)) |>
+  ggplot(aes(y = value, x = name, color = n)) +
+    geom_jitter(alpha = 0.8) +
+    geom_tile(fill = NA) +
+    geom_text(
+      aes(label = n), 
+      position = position_nudge(x = 0.4, y = -0.4),
+      color = col1,
+      size = 3
       ) +
-    coord_flip() +
-    xlab("") +
-    ylab("Number of respondent's endorsing") +
+    scale_color_viridis(
+      guide = "none", option = "A", discrete = FALSE, begin = 0.5
+      ) +
+    xlab("Setting") +
+    ylab("") +
     theme(panel.grid = element_blank()) +
-    scale_x_discrete(labels = function(x) str_wrap(x, 30)) +
-    labs(caption= paste0("n = ", nrow(df), " total endorsements across ", length(unique(df$response_id)), " unique respondents"))
-    
+    ggtitle("Where have you/will you collect data using\noutcome measurement instruments in your trial?") +
+    labs(caption = "n = 347 total reponses across 45 respondents")
+  
+  # ggsave("plots/q20.png", device = "png", 
+  #   scale = 0.6, units = "cm", 
+  #   width = 33.87, height = 19.05, dpi = 300
+  #   )
+  #   
 ```
-<br>
-<br>
 
-**Table: What actions did you take following the most recent DHPC on quinolone and fluoroquinolone prescribing issued in June 2023?**
+#### Table: Route and method of administration across all responses
 
 ```{r}
 
-  data |>
-    select(finished, starts_with("q4_4_") & !contains("text")) |>
-  tbl_summary(
-    by = finished,
-    missing = "ifany", 
-    missing_text = "Missing values",
-    # type = list(
-    #   everything() ~ "categorical"
-    #   ), 
-    statistic =  all_categorical() ~ "{n}/{N_nonmiss} ({p}%)"
-    )  |>
-    add_overall() |>
-    modify_spanning_header(c(stat_1, stat_2) ~ "**Finished survey?**") |>
-    add_p(test = list(
-      all_categorical() ~ "chisq.test"
-      ))
+  df |>
+    select(-response_id) |>
+  tbl_cross(
+    margin = c("column", "row"), 
+    percent = "cell"
+  )
+
+```
+
+#### Figure: Route and method of administration across all responses
+
+```{r}
+
+  g1 <- df |>
+    ggplot(aes(x = value, fill = name)) +
+      geom_bar() +
+      scale_fill_viridis(
+        "", option = "A", begin = 0.4, discrete = TRUE
+        ) +
+      coord_flip() +
+      ylab("Number of responses") +
+      xlab("")
+
+  g2 <- df |>
+    ggplot(aes(x = value, fill = name)) +
+      geom_bar(position = "fill") +
+      scale_fill_viridis(
+        "", option = "A", begin = 0.4, discrete = TRUE
+        ) +
+      coord_flip() +
+      ylab("Proportion of responses") +
+      xlab("") +
+      theme(axis.text.y = element_blank())
+  
+  g1 + g2 + plot_layout(guides = "collect") & theme(legend.position = "bottom")
+
+```
+
+#### Figure: Method of administration across all responses
+
+```{r}
+
+  df |>
+    group_by(value) |>
+    mutate(n = n()) |>
+    ungroup() |>
+    mutate(value = reorder(factor(value), n)) |>
+  ggplot(aes(x = value, fill = n)) +
+    geom_bar() +
+    scale_fill_viridis(
+      guide = "none", option = "A", discrete = FALSE, begin = 0.5
+      ) +
+    coord_flip() +
+    xlab("") +
+    ylab("Responses") +
+    labs(caption = "n = 347 total reponses across 45 respondents")
   
 ```
-<br>
-<br>
 
-### Free text
+#### Figure: Location of administration across all responses
 
 ```{r}
-
-  data |> select(q4_4_10_text, finished) |> na.omit()
-
-```
-<br>
-<br>
-
-## Q4.5
-
-Note: From this point forward, all of the non-finishers are missing data for the following responses. 
-
-**Figure: Who opens the DHPC after it arrives in your email inbox/post in your pharmacy?**
-
-```{r}
-
-  df <- data |>
-    filter(!is.na(q4_5)) |>
-    select(response_id, starts_with("q4_t5_")) |> 
-    pivot_longer(-c(response_id)) |>
-    filter(value != "No") |>
-    group_by(value) |>
-    mutate(n = n()) |>
-    ungroup() |>
-    mutate(value = reorder(factor(value), n)) 
 
   df |>
-  ggplot(aes(x = value, fill = n)) +
+    group_by(name) |>
+    mutate(n = n()) |>
+    ungroup() |>
+    mutate(name = reorder(factor(name), n)) |>
+  ggplot(aes(x = name, fill = n)) +
     geom_bar() +
     scale_fill_viridis(
-      guide = "none", option = "A", begin = 0.4, discrete = FALSE
+      guide = "none", option = "A", discrete = FALSE, begin = 0.5
       ) +
     coord_flip() +
     xlab("") +
-    ylab("Number of respondent's endorsing") +
-    theme(panel.grid = element_blank()) +
-    scale_x_discrete(labels = function(x) str_wrap(x, 30)) +
-    labs(caption= paste0("n = ", nrow(df), " total endorsements across ", length(unique(df$response_id)), " unique respondents"))
-    
+    ylab("Responses")  +
+    labs(caption = "n = 347 total reponses across 45 respondents")
+  
 ```
-<br>
-<br>
 
-**Table: Who opens the DHPC after it arrives in your email inbox/post in your pharmacy?**
+#### Figure: Method of administration - Healthcare
 
 ```{r}
 
   data |>
-    filter(finished == "Yes") |>
-    select(starts_with("q4_5_") & !contains("text")) |>
-  tbl_summary(
-    missing = "ifany", 
-    missing_text = "Missing values",
-    # type = list(
-    #   everything() ~ "categorical"
-    #   ), 
-    statistic =  all_categorical() ~ "{n}/{N_nonmiss} ({p}%)"
-    )  
-
-```
-<br>
-<br>
-
-### Free text
-
-```{r}
-
-  data |> select(q4_5_6_text, finished) |> na.omit()
-
-```
-<br>
-<br>
-
-## Q4.6
-
-**Figure: After the DHPC is opened, how is the communication implemented in the pharmacy?**
-
-```{r}
-
-  df <- data |>
-    filter(!is.na(q4_6)) |>
-    select(response_id, starts_with("q4_t6_")) |> 
-    pivot_longer(-c(response_id)) |>
-    filter(value != "No") |>
+    select(response_id, starts_with("q20_1")) |> 
+    pivot_longer(-response_id) |>
+    mutate(name = gsub("q20_1_", "", name)) |>
+    na.omit() |> 
     group_by(value) |>
     mutate(n = n()) |>
     ungroup() |>
-    mutate(value = reorder(factor(value), n)) 
-
-  df |>
-  ggplot(aes(x = value, fill = n)) +
+    mutate(value = reorder(factor(value), n)) |>
+  ggplot(aes(x = value, fill = value)) +
     geom_bar() +
-    scale_fill_viridis(
-      guide = "none", option = "A", begin = 0.4, discrete = FALSE
-      ) +
     coord_flip() +
+    scale_fill_viridis(
+      guide = "none", option = "A", discrete = TRUE, begin = 0.4
+      ) +
     xlab("") +
-    ylab("Number of respondent's endorsing") +
-    theme(panel.grid = element_blank()) +
-    scale_x_discrete(labels = function(x) str_wrap(x, 30)) +
-    labs(caption= paste0("n = ", nrow(df), " total endorsements across ", length(unique(df$response_id)), " unique respondents"))
-    
+    ylab("Number of trials")
+      
 ```
-<br>
-<br>
 
-**Table: After the DHPC is opened, how is the communication implemented in the pharmacy?**
+#### Figure: Method of administration - Home
 
 ```{r}
 
   data |>
-    filter(finished == "Yes") |>
-    select(starts_with("q4_6_") & !contains("text")) |>
-  tbl_summary(
-    missing = "ifany", 
-    missing_text = "Missing values",
-    # type = list(
-    #   everything() ~ "categorical"
-    #   ), 
-    statistic =  all_categorical() ~ "{n}/{N_nonmiss} ({p}%)"
-    )  
-
-```
-<br>
-<br>
-
-### Free text
-
-```{r}
-
-  data |> select(q4_6_11_text, finished) |> na.omit()
-
-```
-<br>
-<br>
-
-## Q4.7
-
-**Figure: How is the DHPC (i.e. Dear Pharmacist letter) disseminated to pharmacists and technicians in your pharmacy?**
-
-```{r}
-
-  df <- data |>
-    filter(!is.na(q4_7)) |>
-    select(response_id, starts_with("q4_t7_")) |> 
-    pivot_longer(-c(response_id)) |>
-    filter(value != "No") |>
+    select(response_id, starts_with("q20_2")) |> 
+    pivot_longer(-response_id) |>
+    mutate(name = gsub("q20_2_", "", name)) |>
+    na.omit() |> 
     group_by(value) |>
     mutate(n = n()) |>
     ungroup() |>
-    mutate(value = reorder(factor(value), n))
-    
-
-  df |>
-  ggplot(aes(x = value, fill = n)) +
+    mutate(value = reorder(factor(value), n)) |>
+  ggplot(aes(x = value, fill = value)) +
     geom_bar() +
-    scale_fill_viridis(
-      guide = "none", option = "A", begin = 0.4, discrete = FALSE
-      ) +
     coord_flip() +
+    scale_fill_viridis(
+      guide = "none", option = "A", discrete = TRUE, begin = 0.4
+      ) +
     xlab("") +
-    ylab("Number of respondent's endorsing") +
-    theme(panel.grid = element_blank()) +
-    scale_x_discrete(labels = function(x) str_wrap(x, 30)) +
-    labs(caption= paste0("n = ", nrow(df), " total endorsements across ", length(unique(df$response_id)), " unique respondents"))
-    
+    ylab("Number of trials")
+      
 ```
-<br>
-<br>
 
-**Table: How is the DHPC (i.e. Dear Pharmacist letter) disseminated to pharmacists and technicians in your pharmacy?**
+#### Figure: Method of administration - Community
 
 ```{r}
 
   data |>
-    filter(finished == "Yes") |>
-    select(starts_with("q4_7_") & !contains("text")) |> 
+    select(response_id, starts_with("q20_3")) |> 
+    pivot_longer(-response_id) |>
+    mutate(name = gsub("q20_3_", "", name)) |>
+    na.omit() |> 
+    group_by(value) |>
+    mutate(n = n()) |>
+    ungroup() |>
+    mutate(value = reorder(factor(value), n)) |>
+  ggplot(aes(x = value, fill = value)) +
+    geom_bar() +
+    coord_flip() +
+    scale_fill_viridis(
+      guide = "none", option = "A", discrete = TRUE, begin = 0.4
+      ) +
+    xlab("") +
+    ylab("Number of trials")
+      
+```
+
+#### Figure: Method of administration - Educational
+
+```{r}
+
+  data |>
+    select(response_id, starts_with("q20_4")) |> 
+    pivot_longer(-response_id) |>
+    mutate(name = gsub("q20_4_", "", name)) |>
+    na.omit() |> 
+    group_by(value) |>
+    mutate(n = n()) |>
+    ungroup() |>
+    mutate(value = reorder(factor(value), n)) |>
+  ggplot(aes(x = value, fill = value)) +
+    geom_bar() +
+    coord_flip() +
+    scale_fill_viridis(
+      guide = "none", option = "A", discrete = TRUE, begin = 0.4
+      ) +
+    xlab("") +
+    ylab("Number of trials")
+      
+```
+
+#### Figure: Method of administration - Academic/research
+
+```{r}
+
+  data |>
+    select(response_id, starts_with("q20_5")) |> 
+    pivot_longer(-response_id) |>
+    mutate(name = gsub("q20_5_", "", name)) |>
+    na.omit() |> 
+    group_by(value) |>
+    mutate(n = n()) |>
+    ungroup() |>
+    mutate(value = reorder(factor(value), n)) |>
+  ggplot(aes(x = value, fill = value)) +
+    geom_bar() +
+    coord_flip() +
+    scale_fill_viridis(
+      guide = "none", option = "A", discrete = TRUE, begin = 0.4
+      ) +
+    xlab("") +
+    ylab("Number of trials")
+      
+```
+
+#### Figure: Method of administration - Combination
+
+```{r}
+
+  data |>
+    select(response_id, starts_with("q20_6")) |> 
+    pivot_longer(-response_id) |>
+    mutate(name = gsub("q20_6_", "", name)) |>
+    na.omit() |> 
+    group_by(value) |>
+    mutate(n = n()) |>
+    ungroup() |>
+    mutate(value = reorder(factor(value), n)) |>
+  ggplot(aes(x = value, fill = value)) +
+    geom_bar() +
+    coord_flip() +
+    scale_fill_viridis(
+      guide = "none", option = "A", discrete = TRUE, begin = 0.4
+      ) +
+    xlab("") +
+    ylab("Number of trials") 
+      
+```
+
+#### Free text
+
+```{r}
+
+  data |>
+    select(starts_with("q20_7")) |> 
+    remove_empty() |> 
+    unlist() |>
+    unique() 
+
+```
+
+## (Q21) Importance 
+
+```{r}
+
+  data |>
+   select(starts_with("q21")) |> 
   tbl_summary(
-    missing = "ifany", 
-    missing_text = "Missing values",
-    # type = list(
-    #   everything() ~ "categorical"
-    #   ), 
+    missing = "ifany",
+    missing_text = "Missing or not applicable",
     statistic =  all_categorical() ~ "{n}/{N_nonmiss} ({p}%)"
     ) 
+
+```
+
+```{r}
+
+  # To plot likert scales items, we need to first create a dataset where the
+  # variables are named as their labels, and to all have a consistent set of
+  # levels. This function does that by taking wide data, reshaping to long in
+  # order to rename the variables and ensure the levels are the same, and then
+  # reshaping back to wide.
+  likert_data <- function(data, variables, var_labs, resp_levs){
+
+      df <- data |>
+        pivot_longer(
+          cols = variables, names_to = "question", values_to = "response"
+          ) |>
+        mutate(
+          question = factor(question, levels = variables, labels = var_labs), 
+          response = factor(response, levels = resp_levs)
+          ) |>
+        pivot_wider(
+          id_cols = c(pid), # ID (you might also need to add a group here)
+          names_from = "question", 
+          values_from = "response"
+          ) 
+      
+    class(df) <- class(df)[3] # likert() can't handle the tibble
+    return(df)
+    }
+  
+
+  # To plot the data, you first need to call likert() using the data you just
+  # created with the function above.
+  likert_plot <- function(data, start, end, n_levs, ...){
+    
+    plot(likert(data[start:end]),
+      col = viridis(n_levs, option = "A", begin = 0.2),
+      panel.strip.color = col2, 
+      wrap = 100
+      ) +
+      guides(fill = guide_legend(
+        title = "", nrow = 2, byrow = TRUE
+        )) +
+      ylab("") +
+      theme(
+        panel.grid = element_blank(), 
+        legend.position = "bottom", 
+        legend.key.size = unit(0.5,"line"), 
+        axis.text.y = element_text(size = 7)
+      ) 
+    }
+
+```
+
+```{r}
+
+  # Variable names
+  vars <- names(select(data, starts_with("q21")))
+  # Variable labels
+  labs <- unlist(map(data[vars], attr, "label"))
+  # Response levels
+  levs <- levels(data$q21_1)
+
+  df <- data |> 
+    select(pid, all_of(vars)) |>
+    likert_data(vars, labs, levs) 
+  
+  g1 <- likert_plot(df, 2, 39, 5) 
+  
+  g1
   
 ```
-<br>
-<br>
 
-### Free text
+## (Q22) Other influences on use of core outcome sets 
+
+#### Free text
 
 ```{r}
 
-  data |> select(q4_7_7_text, finished) |> na.omit()
+  data |>
+    select(starts_with("q22")) |> 
+    remove_empty() |> 
+    unlist() |>
+    unique() 
 
 ```
-<br>
-<br>
 
-## Q4.8
+## (Q23) Other influences on choice of outcomes 
 
-**Figure: If pharmacist or other colleagues are on leave how is the information from the DHPC communicated to them?**
+#### Free text
 
 ```{r}
+
+  data |>
+    select(starts_with("q23")) |> 
+    remove_empty() |> 
+    unlist() |>
+    unique() 
+
+```
+
+## Where respondents learned about the survey (Q24)
+
+
+#### Table: Where respondents learned about the survey.
+
+```{r}
+
+  levs <- names(select(data, starts_with("q24")))
+  x <- unlist(
+    str_split(meta_data$labels[meta_data$var_name %in% levs], " - ")
+    )
+  labs <- x[1:length(x) %% 2 == 0]
 
   df <- data |>
-    filter(!is.na(q4_8)) |>
-    select(response_id, starts_with("q4_t8_")) |> 
-    pivot_longer(-c(response_id)) |>
-    filter(value != "No") |>
-    group_by(value) |>
+    select(response_id, starts_with("q24")) |> 
+    map_df(as.character) |>
+    pivot_longer(-response_id, names_to = "sources", values_to = "value") |>
+    filter(value != "0") |>
+    na.omit() |> 
+    mutate(sources = factor(sources, levels = levs, labels = labs)) |>
+    group_by(sources) |>
     mutate(n = n()) |>
     ungroup() |>
-    mutate(value = reorder(factor(value), n))
-    
+    mutate(sources = reorder(factor(sources), n))
 
+  attr(df$sources, "label") <- "How did you hear about this survey?"
+  
   df |>
-  ggplot(aes(x = value, fill = n)) +
-    geom_bar() +
-    scale_fill_viridis(
-      guide = "none", option = "A", begin = 0.4, discrete = FALSE
-      ) +
-    coord_flip() +
-    xlab("") +
-    ylab("Number of respondent's endorsing") +
-    theme(panel.grid = element_blank()) +
-    scale_x_discrete(labels = function(x) str_wrap(x, 30)) +
-    labs(caption= paste0("n = ", nrow(df), " total endorsements across ", length(unique(df$response_id)), " unique respondents"))
-    
-```
-<br>
-<br>
-
-**Table: If pharmacist or other colleagues are on leave how is the information from the DHPC communicated to them?**
-
-```{r}
-
-  data |>
-    filter(finished == "Yes") |>
-    select(starts_with("q4_8_") & !contains("text")) |> 
+    select(sources) |>
   tbl_summary(
     missing = "ifany", 
     missing_text = "Missing values",
-    # type = list(
-    #   everything() ~ "categorical"
-    #   ), 
+    type = sources ~ "categorical",
     statistic =  all_categorical() ~ "{n}/{N_nonmiss} ({p}%)"
     ) 
-  
-```
-<br>
-<br>
-
-### Free text
-
-```{r}
-
-  data |> select(q4_8_4_text, finished) |> na.omit()
-
-```
-<br>
-<br>
-
-## Q4.9
-
-**Table: Is the information from the DHPC communicated to new staff/pharmacy locums?**
-
-```{r}
-
-  data |>
-    filter(finished == "Yes") |>
-    select(q4_9) |> 
-  tbl_summary(
-    missing = "ifany", 
-    missing_text = "Missing values",
-    # type = list(
-    #   everything() ~ "categorical"
-    #   ), 
-    statistic =  all_categorical() ~ "{n}/{N_nonmiss} ({p}%)"
-    ) 
-  
-```
-<br>
-<br>
-
-### Free text
-
-```{r}
-
-  data |> select(q4_9_3_text, finished) |> na.omit()
-
-```
-<br>
-<br>
-
-## Q4.10
-
-**Figure: If the DHPC is communicated to new staff/pharmacy locums how is this done?**
-
-```{r}
-
-  df <- data |>
-    filter(!is.na(q4_10)) |>
-    select(response_id, starts_with("q4_t10_")) |> 
-    pivot_longer(-c(response_id)) |>
-    filter(value != "No") |>
-    group_by(value) |>
-    mutate(n = n()) |>
-    ungroup() |>
-    mutate(value = reorder(factor(value), n))
     
 
-  df |>
-  ggplot(aes(x = value, fill = n)) +
-    geom_bar() +
-    scale_fill_viridis(
-      guide = "none", option = "A", begin = 0.4, discrete = FALSE
-      ) +
-    coord_flip() +
-    xlab("") +
-    ylab("Number of respondent's endorsing") +
-    theme(panel.grid = element_blank()) +
-    scale_x_discrete(labels = function(x) str_wrap(x, 30)) +
-    labs(caption= paste0("n = ", nrow(df), " total endorsements across ", length(unique(df$response_id)), " unique respondents"))
-    
 ```
-<br>
-<br>
 
-**Table: If the DHPC is communicated to new staff/pharmacy locums how is this done?**
-
-```{r}
-
-  data |>
-    filter(finished == "Yes") |>
-    select(starts_with("q4_10_") & !contains("text")) |> 
-  tbl_summary(
-    missing = "ifany", 
-    missing_text = "Missing values",
-    # type = list(
-    #   everything() ~ "categorical"
-    #   ), 
-    statistic =  all_categorical() ~ "{n}/{N_nonmiss} ({p}%)"
-    ) 
-  
-```
-<br>
-<br>
-
-### Free text
-
-```{r}
-
-  data |> select(q4_10_6_text, finished) |> na.omit()
-
-```
-<br>
-<br>
-
-## Q4.11
-
-**Figure: Are there any barriers that prevent you from implementing DHPC recommendations in your pharmacy?**
-
-```{r}
-
-  df <- data |>
-    filter(!is.na(q4_11)) |>
-    select(response_id, starts_with("q4_t11_")) |> 
-    pivot_longer(-c(response_id)) |>
-    filter(value != "No") |>
-    group_by(value) |>
-    mutate(n = n()) |>
-    ungroup() |>
-    mutate(value = reorder(factor(value), n))
-    
-
-  df |>
-  ggplot(aes(x = value, fill = n)) +
-    geom_bar() +
-    scale_fill_viridis(
-      guide = "none", option = "A", begin = 0.4, discrete = FALSE
-      ) +
-    coord_flip() +
-    xlab("") +
-    ylab("Number of respondent's endorsing") +
-    theme(panel.grid = element_blank()) +
-    scale_x_discrete(labels = function(x) str_wrap(x, 30)) +
-    labs(caption= paste0("n = ", nrow(df), " total endorsements across ", length(unique(df$response_id)), " unique respondents"))
-    
-```
-<br>
-<br>
-
-**Table: Are there any barriers that prevent you from implementing DHPC recommendations in your pharmacy?**
-
-```{r}
-
-  data |>
-    filter(finished == "Yes") |>
-    select(starts_with("q4_11_") & !contains("text")) |> 
-  tbl_summary(
-    missing = "ifany", 
-    missing_text = "Missing values",
-    # type = list(
-    #   everything() ~ "categorical"
-    #   ), 
-    statistic =  all_categorical() ~ "{n}/{N_nonmiss} ({p}%)"
-    ) 
-  
-```
-<br>
-<br>
-
-### Free text
-
-```{r}
-
-  data |> select(q4_11_8_text, finished) |> na.omit()
-
-```
-<br>
-<br>
-
-```{r sysinfo}
-
-  DescTools::SysInfo()
-
-```
