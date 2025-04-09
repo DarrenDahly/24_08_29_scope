@@ -784,7 +784,7 @@ Note: I don't see an actual open text variable associated with this set of respo
     group_by(source) |>
     mutate(n = n()) |>
     ungroup() |>
-    mutate(source = reorder(factor(source), n, decreasing = TRUE))
+    mutate(source = reorder(factor(source), n, decreasing = FALSE))
   
   n_r <- length(unique(df$response_id))
   n_c <- nrow(df)
@@ -849,7 +849,7 @@ Note: No actual open text field for "other".
     group_by(barrier) |>
     mutate(n = n()) |>
     ungroup() |>
-    mutate(barrier = reorder(factor(barrier), n, decreasing = TRUE))
+    mutate(barrier = reorder(factor(barrier), n, decreasing = FALSE))
   
   n_r <- length(unique(df$response_id))
   n_c <- nrow(df)
@@ -922,7 +922,7 @@ Note: No actual open text field for "other".
     group_by(facilitator) |>
     mutate(n = n()) |>
     ungroup() |>
-    mutate(facilitator = reorder(factor(facilitator), n, decreasing = TRUE))
+    mutate(facilitator = reorder(factor(facilitator), n, decreasing = FALSE))
   
   n_r <- length(unique(df$response_id))
   n_c <- nrow(df)
@@ -1691,7 +1691,8 @@ Note: No actual free text field for "other" responses.
     plot(likert(data[start:end]),
       col = viridis(n_levs, option = "A", begin = 0.2),
       panel.strip.color = col2, 
-      wrap = 100
+      wrap = 100, 
+      text.color = col1 
       ) +
       guides(fill = guide_legend(
         title = "", nrow = 2, byrow = TRUE
